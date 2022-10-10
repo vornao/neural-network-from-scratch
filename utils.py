@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def one_hot_encoder(data):
     datas = []
     for i in range(0, len(data)):
@@ -15,7 +16,6 @@ class Error:
 
 
 class MultiClassError(Error):
-
     def validate(self, y_true, y_pred):
         y_true = np.argmax(y_true)
         y_pred = np.argmax(y_pred)
@@ -27,7 +27,6 @@ class MultiClassError(Error):
 
 
 class SingleClassError(Error):
-    
     def validate(self, y_true, y_pred):
         """
         Loss function for moons dataset classifier.
@@ -38,3 +37,6 @@ class SingleClassError(Error):
             return 0
         else:
             return 1
+
+
+TRAIN_FMT = """Epoch : {} -  Training Loss: {} - Validaition Loss {}\n------------------------------------------------------------"""

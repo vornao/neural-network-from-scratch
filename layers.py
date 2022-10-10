@@ -1,11 +1,15 @@
 import numpy as np
 import activation_functions as af
 
+
 class Layer:
     """
     Just a fully connected layer.
     """
-    def __init__(self, units: int, input_shape: int, activation_function: af.Activation, bias=0.5) -> None:
+
+    def __init__(
+        self, units: int, input_shape: int, activation_function: af.Activation, bias=0.5
+    ) -> None:
 
         # init bias vector
         self.bias = np.ones(units) * bias
@@ -37,9 +41,10 @@ class Layer:
         # compute deltas for each unit in layer.
         # deltas is a vector with units length
         deltas = np.multiply(
-            W_prop.T.dot(deltas_prop), self.activation.derivative(self.lin_out))
+            W_prop.T.dot(deltas_prop), self.activation.derivative(self.lin_out)
+        )
 
-        deltas = deltas.reshape(len(deltas), 1) # TODO: how to not reshape everything?
+        deltas = deltas.reshape(len(deltas), 1)  # TODO: how to not reshape everything?
         last_inputs = self.last_input.reshape(len(self.last_input), 1)
         self.W = self.W - eta * deltas.dot(last_inputs.T)
 
@@ -53,10 +58,11 @@ class Layer:
 
 
 class OutputLayer(Layer):
-    def __init__(self, units: int, input_shape: int, activation_function: af.Activation, bias=0.5) -> None:
+    def __init__(
+        self, units: int, input_shape: int, activation_function: af.Activation, bias=0.5
+    ) -> None:
 
         super().__init__(units, input_shape, activation_function, bias)
-
 
     def update_weights(self, deltas_prop, W_prop, eta):
         W_old = self.W
