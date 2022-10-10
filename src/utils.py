@@ -1,6 +1,5 @@
 import numpy as np
 
-
 def one_hot_encoder(data):
     datas = []
     for i in range(0, len(data)):

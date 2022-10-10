@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def sigmoid(x, a=0.05):
+def sigmoid(x, a=1):
     return 1 / (1 + np.exp(-1 * a * x))
 
 
@@ -38,7 +38,7 @@ class Activation:
 
 
 class Sigmoid(Activation):
-    def __init__(self, a) -> None:
+    def __init__(self, a=1) -> None:
         self.a = a
 
     def activation(self, x):
