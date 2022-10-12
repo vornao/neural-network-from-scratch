@@ -11,8 +11,6 @@ class Network:
     Your dense neural network class.
     """
 
-    
-
     def __init__(self, input_shape: int) -> None:
         self.layers: List[Layer] = []
         self.layers.append(InputLayer(input_shape))
