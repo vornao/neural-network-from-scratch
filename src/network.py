@@ -14,13 +14,13 @@ class Network:
         self.layers: List[Layer] = []
         self.layers.append(InputLayer(input_shape))
 
-    def add_layer(self, units, activation_function: Activation):
+    def add_layer(self, units, activation_function: Activation, bias=0.5):
         """
         Just add a new hidden layer to the network, with requested
         activation function and units.
         """
         self.layers.append(
-            Layer(units, self.layers[-1].output_shape, activation_function)
+            Layer(units, self.layers[-1].output_shape, activation_function, bias)
         )
 
     def add_output_layer(self, units, activation_function: Activation):
