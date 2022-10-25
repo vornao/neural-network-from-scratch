@@ -3,7 +3,6 @@ from typing import List
 from utils import Error, TRAIN_FMT
 from layers import Layer, InputLayer, OutputLayer
 from activation_functions import Activation
-from os import system
 
 
 class Network:
@@ -43,13 +42,14 @@ class Network:
 
         return out
 
+    # TODO: remove pred-target cost evaluation to exploit minibatch training
     def __backward_prop__(self, pred, target, eta=10e-3):
 
         """
         Perform backward propagation during training.
         """
         # compute difference among targets and actual prediction.
-        deltas_prop = np.add(pred, -1 * target)
+        deltas_prop = np.add(pred, -target)
         W_prop = np.zeros((1, 1))
 
         # now compute backward prop for every other layer, except for input layer.
@@ -65,9 +65,9 @@ class Network:
 
     def compute_loss(self, x, y, estimator: Error):
         error = 0
-        for i in range(0, len(x)):
-            pred = self.output(x[i])
-            error += estimator.validate(y[i], pred)
+        for x_t, y_t in zip(x, y):
+            pred = self.output(x_t)
+            error += estimator.validate(y_t, pred)
 
         return error / len(x)
 
@@ -89,11 +89,16 @@ class Network:
         tr_stats = []
         val_stats = []
 
+        # TODO: 
+        # - implement minibatch training computing error for b sized training labels and passing it to bacwkard prop function
+        # - implement magnitude gradient descent algorithm
         for epoch in range(0, epochs):
 
-            for i in range(0, len(train_data)):
+            for train, label in zip(train_data, train_labels):
                 self.__backward_prop__(
-                    self.output(train_data[i]), train_labels[i], eta=eta
+                    pred= self.output(train), 
+                    target=label, 
+                    eta=eta
                 )
 
             tr_error = self.compute_loss(train_data, train_labels, estimator)

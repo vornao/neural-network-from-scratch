@@ -41,7 +41,8 @@ class Layer:
         # compute deltas for each unit in layer.
         # deltas is a vector with units length
         deltas = np.multiply(
-            W_prop.T.dot(deltas_prop), self.activation.derivative(self.lin_out)
+            W_prop.T.dot(deltas_prop), 
+            self.activation.derivative(self.lin_out)
         )
 
         deltas = deltas.reshape(len(deltas), 1)  # TODO: how to not reshape everything?
