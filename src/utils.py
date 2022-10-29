@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def one_hot_encoder(data):
     datas = []
     for i in range(0, len(data)):
@@ -38,4 +39,4 @@ class SingleClassError(Error):
             return 1
 
 
-TRAIN_FMT = """Epoch : {} -  Training Loss: {} - Validaition Loss {}\n------------------------------------------------------------"""
+TRAIN_FMT = """\nEpoch : {} -  Training Loss: {} - Validaition Loss {}\n------------------------------------------------------------"""

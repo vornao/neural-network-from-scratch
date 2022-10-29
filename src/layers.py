@@ -3,55 +3,44 @@ import activation_functions as af
 
 
 class Layer:
-    """
-    Just a fully connected layer.
-    """
+    """Just a fully connected layer."""
 
     def __init__(
         self, units: int, input_shape: int, activation_function: af.Activation, bias=0.5
     ) -> None:
 
-        # init bias vector
-        self.bias = np.ones(units) * bias
-
-        # set output shape
+        # define shape of layer and number of units
         self.output_shape = units
         self.units = units
-
         self.activation = activation_function
 
-        # randomly init weight matrix
+        # randomly init weight matrix and biases
         self.W = np.random.uniform(size=(units, input_shape))
+        self.bias = np.ones(units) * bias
+
 
     def output(self, x):
-        """
-        Compute layer's output
-        """
-        self.lin_out = np.dot(self.W, x) + self.bias
-        out = self.activation.activation(self.lin_out)
-        self.last_input = x
-        self.last_out = out
-        return out
+        """Compute layer's output and save it."""
 
-    def update_weights(self, deltas_prop, W_prop: np.ndarray, eta):
+        self.input = np.expand_dims(x, axis=1)
+        self.net = np.dot(self.W, x) + self.bias
+        self.out = self.activation.activation(self.net)
+        return self.out
 
-        # save last weights to propagate
-        W_old = self.W
 
-        # compute deltas for each unit in layer.
-        # deltas is a vector with units length
-        deltas = np.multiply(
-            W_prop.T.dot(deltas_prop), self.activation.derivative(self.lin_out)
-        )
+    def update_weights(self, deltas, eta):
 
-        deltas = deltas.reshape(len(deltas), 1)  # TODO: how to not reshape everything?
-        last_inputs = self.last_input.reshape(len(self.last_input), 1)
-        self.W = self.W - eta * deltas.dot(last_inputs.T)
+        # compute dl to update weights and deltas to propagate back.
+        dl = np.multiply(deltas, self.activation.derivative(self.net))
+        deltas_prop = np.dot(dl, self.W)
+        delta_w = np.dot(np.expand_dims(dl, axis=1), self.input.T)
+        
+        # update weights and biases
+        self.W = self.W - (eta * delta_w)
+        self.bias = self.bias - dl * eta
 
-        # update bias
-        self.bias = self.bias - deltas.flatten() * eta
+        return deltas_prop
 
-        return W_old, deltas.flatten()
 
     def __str__(self) -> str:
         return f"Weights matrix = {self.W} \n, biases = {self.bias}"
@@ -64,20 +53,18 @@ class OutputLayer(Layer):
 
         super().__init__(units, input_shape, activation_function, bias)
 
-    def update_weights(self, deltas_prop, W_prop, eta):
-        W_old = self.W
+    def update_weights(self, deltas, eta: int):
 
-        # compute deltas for output layer:
-        # in this case, we have the difference between labels and prediction
-        deltas = np.multiply(deltas_prop, self.activation.derivative(self.lin_out))
-        deltas = deltas.reshape(len(deltas), 1)
-        last_inputs = self.last_input.reshape(len(self.last_input), 1)
-        self.W = self.W - eta * deltas.dot(last_inputs.T)
+        # compute dl to update weights and deltas to propagate back.
+        dl = np.multiply(deltas, self.activation.derivative(self.net))
+        deltas_prop = np.dot(dl, self.W)
+        delta_w = np.dot(np.expand_dims(dl, axis=1), self.input.T)
 
-        # update bias
-        self.bias = self.bias - deltas.flatten() * eta
+        # update weights and biases
+        self.W = self.W - (eta * delta_w)
+        self.bias = self.bias - dl * eta
 
-        return W_old, deltas.flatten()
+        return deltas_prop
 
 
 class InputLayer(Layer):

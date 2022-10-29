@@ -50,7 +50,7 @@ class Sigmoid(Activation):
 
 class ReLU(Activation):
     def activation(self, x):
-        return relu(x)
+        return np.maximum(0, x)
 
     def derivative(self, x):
         return relu_d(x)
