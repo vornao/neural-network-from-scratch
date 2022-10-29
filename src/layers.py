@@ -3,9 +3,7 @@ import activation_functions as af
 
 
 class Layer:
-    """
-    Just a fully connected layer.
-    """
+    """Just a fully connected layer."""
 
     def __init__(
         self, units: int, input_shape: int, activation_function: af.Activation, bias=0.5
@@ -22,9 +20,8 @@ class Layer:
 
 
     def output(self, x):
-        """
-        Compute layer's output and save it.
-        """
+        """Compute layer's output and save it."""
+
         self.input = np.expand_dims(x, axis=1)
         self.net = np.dot(self.W, x) + self.bias
         self.out = self.activation.activation(self.net)
@@ -37,6 +34,7 @@ class Layer:
         dl = np.multiply(deltas, self.activation.derivative(self.net))
         deltas_prop = np.dot(dl, self.W)
         delta_w = np.dot(np.expand_dims(dl, axis=1), self.input.T)
+        
         # update weights and biases
         self.W = self.W - (eta * delta_w)
         self.bias = self.bias - dl * eta
