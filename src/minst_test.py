@@ -40,7 +40,7 @@ x_test = (x_test / 255) * 0.1  # type: ignore
 
 # %%
 net = network.Network(28 * 28)
-net.add_layer(8, ReLU())
+net.add_layer(16, ReLU())
 net.add_layer(8, ReLU())
 net.add_output_layer(10, Sigmoid(a=0.05))
 

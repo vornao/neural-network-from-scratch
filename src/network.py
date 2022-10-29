@@ -1,10 +1,13 @@
 import numpy as np
-from typing import List
+from itertools import islice
+
+from typing import List 
 from utils import Error, TRAIN_FMT
 from layers import Layer, InputLayer, OutputLayer
 from losses import Loss
 from activation_functions import Activation
 from progress.bar import Bar
+
 
 import time
 
