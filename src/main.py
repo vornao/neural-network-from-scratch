@@ -23,6 +23,8 @@ def test_mnist():
     y_test = one_hot_encoder(mnist_train[30000:36000]["label"].to_numpy())
     x_test = mnist_train[30000:36000].drop(["label"], axis=1).to_numpy()
     x_test = (x_test / 255) * 0.1  # type: ignore
+    
+
 
     net = network.Network(28 * 28)
     net.add_layer(10, ReLU())

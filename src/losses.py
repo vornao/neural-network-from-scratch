@@ -15,3 +15,4 @@ class MeanSquaredError(Loss):
 
     def dloss(self, pred, labels):
         return pred - labels
+   

@@ -8,7 +8,7 @@ import sys
 sys.path.insert(0, "../")
 sys.path.insert(0, "../src")
 
-from utils import MultiClassError, one_hot_encoder
+from utils import MultiClassError, SingleClassError, one_hot_encoder
 import network as network
 from activation_functions import Sigmoid, ReLU
 from losses import MeanSquaredError
@@ -17,9 +17,7 @@ from losses import MeanSquaredError
 from sklearn.metrics import (
     roc_auc_score,
     accuracy_score,
-    confusion_matrix,
 )
-
 
 mnist_train = pd.read_csv(
     "/Users/vornao/Desktop/unipi/ML/code/first_nn/data/mnist/train.csv"
@@ -42,7 +40,7 @@ x_test = (x_test / 255) * 0.1  # type: ignore
 net = network.Network(28 * 28)
 net.add_layer(16, ReLU())
 net.add_layer(8, ReLU())
-net.add_output_layer(10, Sigmoid(a=0.05))
+net.add_output_layer(10, Sigmoid(a=0.005))
 
 stats = net.train(
     x_train,
@@ -51,15 +49,16 @@ stats = net.train(
     y_valid,
     metric=MultiClassError(),
     loss=MeanSquaredError(),
-    epochs=30,
+    epochs=50,
     eta=0.01,
     verbose=True,
+    batch_size=1
 )
 
 # %%
 predictions = []
 
-for p in x_test:
+for p in x_test: 
     predictions.append(np.round(net.output(p)))
 
 predictions = np.array(predictions)
@@ -69,17 +68,3 @@ accuracy = round(accuracy_score(y_test, predictions), 2) * 100
 roc = round(roc_auc_score(y_test, predictions), 2)
 
 print(f"> Model accuracy: {accuracy}%. ROC AUC Score: {roc}")
-
-losses = pd.DataFrame({"Training Loss": stats[0], "Validation Loss": stats[1]})
-
-palette = sns.color_palette("rocket_r", 2)
-sns.set_style("darkgrid")
-sns.lineplot(losses, palette=palette)
-
-
-# %%
-labels_pred = np.argmax(predictions, 1)
-labels_true = np.argmax(y_test, 1)
-
-C = confusion_matrix(labels_pred, labels_true)
-sns.heatmap(C, annot=True).show()

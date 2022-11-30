@@ -37,6 +37,13 @@ class Activation:
         raise NotImplementedError
 
 
+class Linear(Activation):
+    def activation(self, x):
+        return x
+    def derivative(self, x):
+        return 1
+
+
 class Sigmoid(Activation):
     def __init__(self, a=1) -> None:
         self.a = a
@@ -54,3 +61,19 @@ class ReLU(Activation):
 
     def derivative(self, x):
         return relu_d(x)
+
+
+class Softmax(Activation):
+    def activation(self, x):
+        return (np.exp(x)/np.exp(x).sum())
+    
+    def derivative(self, x):
+        return (np.exp(x)/np.exp(x).sum())
+
+
+class Tanh(Activation):
+    def activation(self, x):
+        return np.tanh(x)
+
+    def derivative(self, x):
+        return 1 - np.tanh(x)**2
