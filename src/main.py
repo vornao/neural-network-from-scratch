@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-from activation_functions import Sigmoid, ReLU
+from activations import Sigmoid, ReLU
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_curve, roc_auc_score, accuracy_score
 from utils import one_hot_encoder, MultiClassError, SingleClassError
@@ -23,6 +23,8 @@ def test_mnist():
     y_test = one_hot_encoder(mnist_train[30000:36000]["label"].to_numpy())
     x_test = mnist_train[30000:36000].drop(["label"], axis=1).to_numpy()
     x_test = (x_test / 255) * 0.1  # type: ignore
+    
+
 
     net = network.Network(28 * 28)
     net.add_layer(10, ReLU())

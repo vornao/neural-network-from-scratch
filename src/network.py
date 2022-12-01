@@ -1,12 +1,15 @@
 import numpy as np
-from typing import List
-from utils import Error, TRAIN_FMT
-from layers import Layer, InputLayer, OutputLayer
-from losses import Loss
-from activation_functions import Activation
-from progress.bar import Bar
 
-import time
+from typing import List
+from src.utils import TRAIN_FMT
+from src.layers import Layer, InputLayer
+from src.activations import Activation
+from src.metrics import Metric
+from src.losses import Loss
+from tqdm.auto import tqdm
+from time import sleep
+
+fmt = '{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt}[{postfix}]'
 
 
 class Network:
@@ -27,49 +30,38 @@ class Network:
             Layer(units, self.layers[-1].output_shape, activation_function, bias)
         )
 
-    def add_output_layer(self, units, activation_function: Activation):
-        """
-        Add an output layer with requested activation functions and units.
-        """
-        self.layers.append(
-            OutputLayer(units, self.layers[-1].output_shape, activation_function)
-        )
-
     def __forward_prop__(self, x):
         """
         Perform forward propagation and return network output
         """
-
         out = x
-        for l in self.layers:
-            out = l.output(out)
+        for layer in self.layers:
+            out = layer.output(out)
 
         return out
 
     # TODO: remove pred-target cost evaluation to exploit minibatch training
-    def __backward_prop__(self, pred, target, loss: Loss, eta=10e-3):
+    def __backward_prop__(self, deltas, eta, batch_size=1):
 
         """
         Perform backward propagation during training.
         """
-        # compute difference among targets and actual prediction.
-        # this in fact is the gradient
-        deltas = loss.dloss(pred, target)
-        # W_prop = np.zeros((1, 1))
-
+        d = deltas
         # now compute backward prop for every other layer, except for input layer.
-        for l in reversed(self.layers[1 : len(self.layers)]):
-            # TODO put only gradient :)
-            #
-            deltas = l.update_weights(deltas=deltas, eta=eta)
+        for layer in reversed(self.layers[1: len(self.layers)]):
+            d = layer.update_weights(deltas=d, eta=eta)
 
     def multiple_outputs(self, patterns):
         outputs = []
 
         for p in patterns:
-            outputs.append(self.__forward_prop__(p))
+            p.shape = (len(p), 1)
+            out = self.__forward_prop__(p)
+            outputs.append(out)
 
-        return np.array(outputs)
+        outputs = np.array(outputs)
+        outputs.shape = (outputs.shape[0], outputs.shape[2])
+        return outputs
 
     def output(self, x):
         """
@@ -78,16 +70,17 @@ class Network:
         return self.__forward_prop__(x)
 
     def train(
-        self,
-        train_data,
-        train_labels,
-        val_data,
-        val_labels,
-        metric: Error,
-        loss: Loss,
-        epochs=25,
-        eta=10e-3,
-        verbose=True,
+            self,
+            train_data,
+            train_labels,
+            val_data,
+            val_labels,
+            metric: Metric,
+            loss: Loss,
+            epochs=25,
+            eta=10e-3,
+            batch_size=1,
+            verbose=True,
     ):
         """
         Train network with given data and labels for requested epoch.
@@ -95,43 +88,55 @@ class Network:
         """
         tr_stats = []
         val_stats = []
+        tr_err = []
+        val_err = []
+
+        bar = tqdm(total=epochs, desc="Training", leave=True, bar_format=fmt)
 
         # TODO:
-        # - implement minibatch training computing error for b sized training labels and passing it to bacwkard prop function
+        # - implement minibatch training computing error for b sized training
+        #   labels and passing it to backward prop function
         # - implement magnitude gradient descent algorithm
         for epoch in range(0, epochs):
 
-            # Just some printing stuff
-            bar = Bar(f"Epoch: {epoch}/{epochs}", max=len(train_labels))
-            bar.bar_prefix = "["
-            bar.bar_suffix = "]"
+            # make batch_size sized tuples
+            # ((x1, d1), (x2, d2), ... , (x_batch_size, d_batch_size))
+            # batched = chunker(zipped, batch_size)
 
-            # Forward propagation over single pattern and back propagation
-            # for now it's just on-line learning.
-            # remove that ugly predictions list.
+            for x, target in zip(train_data, train_labels):
+                x.shape = (x.shape[0], 1)
+                pred = self.__forward_prop__(x)
+                deltas = pred - target
+                deltas.shape = (deltas.shape[0], 1)
 
-            predictions = []
+                self.__backward_prop__(deltas=deltas, eta=eta)
 
-            for train, label in zip(train_data, train_labels):
-                p = self.output(train)
-                predictions.append(p)
+            tr_loss = loss.loss(self.multiple_outputs(train_data), train_labels)
+            val_loss = loss.loss(self.multiple_outputs(val_data), val_labels)
 
-                self.__backward_prop__(pred=p, target=label, eta=eta, loss=loss)
+            tr_error_stats = metric(self.multiple_outputs(train_data), train_labels)
+            val_error_stats = metric(self.multiple_outputs(val_data), val_labels)
 
-                if verbose:
-                    bar.next()
-
-            tr_error = loss.loss(predictions, train_labels)
-            val_error = loss.loss(self.multiple_outputs(val_data), val_labels)
-
-            if verbose:
-                print(TRAIN_FMT.format(epoch, round(tr_error, 4), round(val_error, 4)))
-
-            tr_stats.append(tr_error)
-            val_stats.append(val_error)
+            tr_stats.append(tr_loss)
+            val_stats.append(val_loss)
+            tr_err.append(tr_error_stats)
+            val_err.append(val_error_stats)
 
             if verbose:
-                bar.finish()
+                stats = {
+                    "Loss": tr_loss,
+                    "Val loss": val_loss,
+                    "Val acc": val_error_stats,
+                }
+                bar.set_postfix(stats)
+                bar.update(1)
 
-        print(TRAIN_FMT.format(epochs, round(tr_error, 4), round(val_error, 4)))
-        return tr_stats, val_stats
+        stats = {
+            "epochs": range(epochs),
+            "train_loss": tr_stats,
+            "val_loss": val_stats,
+            "train_error": tr_err,
+            "val_error": val_err,
+        }
+
+        return stats
