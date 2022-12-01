@@ -1,5 +1,5 @@
 import numpy as np
-import activation_functions as af
+import src.activations as af
 
 
 class Layer:
@@ -15,32 +15,33 @@ class Layer:
         self.activation = activation_function
 
         # randomly init weight matrix and biases
-        self.W = np.matrix(np.random.uniform(size=(input_shape, units)))
-        self.bias = np.ones((units,1)) * bias
+        self.W = np.random.uniform(low=-0.05, high=0.05, size=(input_shape, units))
+        self.bias = np.random.uniform(low=-0.01, high=0.01, size=(units, 1))
+        self.last_input = np.NaN
+        self.last_net = np.NaN
+        self.last_output = np.NaN
 
+    def net(self, x):
+        return (self.W.T @ x) + self.bias
   
     def output(self, x):
         """Compute layer's output and save it."""
+        self.last_input = np.copy(x)
+        self.last_net = self.net(x)
+        self.last_output = self.activation.activation(self.last_net)
 
-        self.input = x
-        self.net = self.W.T @ x + self.bias
-        self.out = self.activation.activation(self.net)
-        return self.out
-
+        return self.last_output
 
     def update_weights(self, deltas, eta):
-
         # compute dl to update weights and deltas to propagate back.
-        dl = np.multiply(deltas.T, self.activation.derivative(self.net))
-        deltas_prop = self.W @ dl
-        delta_w = self.input @ dl
-        
-        # update weights and biases
-        self.W -= (eta * delta_w)
+        dl = deltas * self.activation.derivative(self.last_net)
+        delta_w = self.last_input @ dl.T
+
+        self.W -= eta * delta_w
         self.bias -= dl * eta
 
+        deltas_prop = self.W @ dl
         return deltas_prop
-
 
     def __str__(self) -> str:
         return f"Weights matrix = {self.W} \n, biases = {self.bias}"
@@ -48,8 +49,8 @@ class Layer:
 
 class InputLayer(Layer):
     def __init__(self, units: int) -> None:
+        self.output_shape = units
         self.units = units
-        self.output_shape: int = units
 
     def output(self, x):
         return x

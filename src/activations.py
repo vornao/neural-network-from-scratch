@@ -65,10 +65,10 @@ class ReLU(Activation):
 
 class Softmax(Activation):
     def activation(self, x):
-        return (np.exp(x)/np.exp(x).sum())
+        return np.exp(x) / np.exp(x).sum()
     
     def derivative(self, x):
-        return (np.exp(x)/np.exp(x).sum())
+        return np.exp(x) / np.exp(x).sum()
 
 
 class Tanh(Activation):

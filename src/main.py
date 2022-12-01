@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-from activation_functions import Sigmoid, ReLU
+from activations import Sigmoid, ReLU
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_curve, roc_auc_score, accuracy_score
 from utils import one_hot_encoder, MultiClassError, SingleClassError

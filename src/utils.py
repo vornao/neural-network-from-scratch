@@ -4,13 +4,15 @@ from itertools import zip_longest
 
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
+import sklearn.datasets
 
-TRAIN_FMT = """\nEpoch : {} -  Training Loss: {} - Validaition Loss {}\n------------------------------------------------------------"""
+TRAIN_FMT = """\nEpoch: {} -  TR Loss: {} - VL Loss {} - TR accur. {}, VAL accur. {}\n----------------------------------------------------------------------------------------- """
+
 
 def chunker(iterable, n, fillvalue=None):
     """
     Return iterator for iterate over chunked iterable
-    @paramd
+    @params iterable: iterable to be chunked
     """
     args = [iter(iterable)] * n
     return zip_longest(*args, fillvalue=fillvalue)
@@ -41,7 +43,6 @@ class MultiClassError(Error):
             return 1
 
 
-
 class SingleClassError(Error):
     def validate(self, y_true, y_pred):
         """
@@ -58,10 +59,8 @@ class SingleClassError(Error):
 # load monk dataset
 
 def load_monk1(test_size=0.2):
-    train = pd.read_csv('../data/monks-1.train', sep=' ').drop(['a8'], axis=1)
-    test = pd.read_csv('../data/monks-1.test', sep=' ').drop(['a8'], axis=1)
-
-    # perform one-hot encoding with sklearn 
+    train = pd.read_csv('../data/monk/monks-1.train', sep=' ').drop(['a8'], axis=1)
+    test = pd.read_csv('../data/monk/monks-1.test', sep=' ').drop(['a8'], axis=1)
 
     enc = OneHotEncoder(handle_unknown='ignore')
     enc.fit(train.drop('a1', axis=1))
@@ -79,7 +78,13 @@ def load_monk1(test_size=0.2):
     return X_train, X_val, X_test, y_train, y_val, y_test
     
 
+# make moons dataset
 
+def make_moons(n_samples=1000, noise=0.1, random_state=42):
+    X, y = sklearn.datasets.make_moons(n_samples=n_samples, noise=noise, random_state=42)
+    # split
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    return X_train, X_test, y_train, y_test
 
 
 
