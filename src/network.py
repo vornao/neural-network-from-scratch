@@ -78,10 +78,8 @@ class Network:
 
     def train(
             self,
-            train_data,
-            train_labels,
-            val_data,
-            val_labels,
+            train: tuple,
+            validation: tuple,
             metric: Metric,
             loss: Loss,
             epochs=25,
@@ -93,10 +91,10 @@ class Network:
         Train network with given data and labels for requested epoch.
         Print progress after each epoch.
         """
-        tr_stats = []
-        val_stats = []
-        tr_err = []
-        val_err = []
+
+        train_data, train_labels = train
+        val_data, val_labels = validation
+
 
         if verbose:
             bar = tqdm(total=epochs, desc="Training", leave=True, bar_format=fmt)
@@ -106,7 +104,7 @@ class Network:
         #   labels and passing it to backward prop function
         # - implement regularization
         # - implement momentum
-        # - implement early stopping
+
 
         for epoch in range(0, epochs):
 
@@ -118,16 +116,13 @@ class Network:
 
                 pred = self.__forward_prop__(x)
                 deltas = pred - target
-                deltas.shape = (deltas.shape[0], 1)
 
                 self.__backward_prop__(deltas=deltas, eta=eta)
 
 
             # compute training error and accuracy for current epoch and append stats
-            stats = self.compute_epoch_stats(epoch, train_data, train_labels, val_data, val_labels, metric, loss)
+            self.epoch_stats(epoch, train_data, train_labels, val_data, val_labels, metric, loss, verbose, bar)
 
-            if verbose:
-                update_bar(bar, stats)
 
         stats = {
             # "epochs": epochs,
@@ -139,7 +134,7 @@ class Network:
 
         return stats
 
-    def compute_epoch_stats(self, epoch, tr, tr_labels, val, val_labels, metric, loss):
+    def epoch_stats(self, epoch, tr, tr_labels, val, val_labels, metric, loss, verbose, bar):
         """
         Compute network accuracy and loss given data and labels.
         """
@@ -165,5 +160,8 @@ class Network:
             "val_loss": val_loss,
             "val_metric": val_metric,
         }
+
+        if verbose:
+            update_bar(bar, epoch_stats)
 
         return epoch_stats
