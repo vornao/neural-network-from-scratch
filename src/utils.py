@@ -101,7 +101,7 @@ def load_moons(n_samples=1000, test_size=0.1, random_state=42, noise=0.2, valida
     return X_train, X_test, y_train, y_test
 
 
-def load_mnist(test_size=0.2, scale=1, random_state=42):
+def load_mnist(test_size=0.2, scale=1, random_state=42, validation=True):
     digits = load_digits()
 
     X = digits.data
@@ -116,6 +116,11 @@ def load_mnist(test_size=0.2, scale=1, random_state=42):
     y = np.expand_dims(y, 2)
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
+
+    # train validation test split
+    if validation:
+        X_val, X_test, y_val, y_test = train_test_split(X_test, y_test, test_size=0.5, random_state=random_state)
+        return X_train, X_val, X_test, y_train, y_val, y_test
 
     return X_train, X_test, y_train, y_test
 
