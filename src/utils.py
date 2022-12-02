@@ -105,6 +105,8 @@ def load_mnist(test_size=0.2, scale=1, random_state=42):
     digits = load_digits()
 
     X = digits.data
+    X = X / 16.0
+    X = np.expand_dims(X, 2)
     y = digits.target
 
     # one hot encoding on y with sklearn
