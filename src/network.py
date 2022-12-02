@@ -1,7 +1,6 @@
 import numpy as np
 
 from typing import List
-from src.utils import TRAIN_FMT
 from src.layers import Layer, InputLayer
 from src.activations import Activation
 from src.metrics import Metric
@@ -12,6 +11,11 @@ from time import sleep
 fmt = '{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt}[{postfix}]'
 
 
+def update_bar(bar, stats):
+    bar.set_postfix(stats)
+    bar.update(1)
+
+
 class Network:
     """
     Your dense neural network class.
@@ -20,6 +24,11 @@ class Network:
     def __init__(self, input_shape: int) -> None:
         self.layers: List[Layer] = []
         self.layers.append(InputLayer(input_shape))
+        self.tr_stats = []
+        self.val_stats = []
+        self.tr_err = []
+        self.val_err = []
+
 
     def add_layer(self, units, activation_function: Activation, bias=0.5):
         """
@@ -42,7 +51,6 @@ class Network:
 
     # TODO: remove pred-target cost evaluation to exploit minibatch training
     def __backward_prop__(self, deltas, eta, batch_size=1):
-
         """
         Perform backward propagation during training.
         """
@@ -60,7 +68,6 @@ class Network:
             outputs.append(out)
 
         outputs = np.array(outputs)
-        outputs.shape = (outputs.shape[0], outputs.shape[2])
         return outputs
 
     def output(self, x):
@@ -91,12 +98,16 @@ class Network:
         tr_err = []
         val_err = []
 
-        bar = tqdm(total=epochs, desc="Training", leave=True, bar_format=fmt)
+        if verbose:
+            bar = tqdm(total=epochs, desc="Training", leave=True, bar_format=fmt)
 
         # TODO:
         # - implement minibatch training computing error for b sized training
         #   labels and passing it to backward prop function
-        # - implement magnitude gradient descent algorithm
+        # - implement regularization
+        # - implement momentum
+        # - implement early stopping
+
         for epoch in range(0, epochs):
 
             # make batch_size sized tuples
@@ -104,39 +115,55 @@ class Network:
             # batched = chunker(zipped, batch_size)
 
             for x, target in zip(train_data, train_labels):
-                x.shape = (x.shape[0], 1)
+
                 pred = self.__forward_prop__(x)
                 deltas = pred - target
                 deltas.shape = (deltas.shape[0], 1)
 
                 self.__backward_prop__(deltas=deltas, eta=eta)
 
-            tr_loss = loss.loss(self.multiple_outputs(train_data), train_labels)
-            val_loss = loss.loss(self.multiple_outputs(val_data), val_labels)
 
-            tr_error_stats = metric(self.multiple_outputs(train_data), train_labels)
-            val_error_stats = metric(self.multiple_outputs(val_data), val_labels)
-
-            tr_stats.append(tr_loss)
-            val_stats.append(val_loss)
-            tr_err.append(tr_error_stats)
-            val_err.append(val_error_stats)
+            # compute training error and accuracy for current epoch and append stats
+            stats = self.compute_epoch_stats(epoch, train_data, train_labels, val_data, val_labels, metric, loss)
 
             if verbose:
-                stats = {
-                    "Loss": tr_loss,
-                    "Val loss": val_loss,
-                    "Val acc": val_error_stats,
-                }
-                bar.set_postfix(stats)
-                bar.update(1)
+                update_bar(bar, stats)
 
         stats = {
-            "epochs": range(epochs),
-            "train_loss": tr_stats,
-            "val_loss": val_stats,
-            "train_error": tr_err,
-            "val_error": val_err,
+            # "epochs": epochs,
+            "train_loss": self.tr_stats,
+            "val_loss": self.val_stats,
+            "train_acc": self.tr_err,
+            "val_acc": self.val_err,
         }
 
         return stats
+
+    def compute_epoch_stats(self, epoch, tr, tr_labels, val, val_labels, metric, loss):
+        """
+        Compute network accuracy and loss given data and labels.
+        """
+        # compute training error and accuracy for current epoch and append stats
+
+        val_loss = None
+        val_metric = None
+
+        tr_loss = loss.loss(self.multiple_outputs(tr), tr_labels)
+        tr_metric = metric(self.multiple_outputs(tr), tr_labels)
+        self.tr_stats.append(tr_loss)
+        self.tr_err.append(tr_metric)
+
+        if val is not None:
+            val_loss = loss.loss(self.multiple_outputs(val), val_labels)
+            val_metric = metric(self.multiple_outputs(val), val_labels)
+            self.val_err.append(val_metric)
+            self.val_stats.append(val_loss)
+
+        epoch_stats = {
+            "epoch": epoch,
+            "loss": tr_loss,
+            "val_loss": val_loss,
+            "val_metric": val_metric,
+        }
+
+        return epoch_stats

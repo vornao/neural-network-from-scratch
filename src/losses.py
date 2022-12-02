@@ -11,6 +11,7 @@ class Loss:
 
 class MeanSquaredError(Loss):
     def loss(self, pred, labels):
+        pred.shape = labels.shape
         return np.mean(np.square(pred - labels))
 
     def backward(self, pred, labels):
@@ -26,3 +27,5 @@ class BinaryCrossEntropy(Loss):
     def backward(self, pred, labels):
         # derivative binary crossentropy
         return -(labels / pred - (1 - labels) / (1 - pred))
+
+
