@@ -4,13 +4,14 @@ from numpy import round
 from numpy import argmax
 
 
-def _binary_accuracy(y_true, y_pred):
-    y_true = round(y_true)
+def _binary_accuracy(y_pred, y_true):
     y_pred = round(y_pred)
+    y_pred.shape = y_true.shape
+
     return accuracy_score(y_true, y_pred)
 
 
-def _multiclass_accuracy(y_true, y_pred):
+def _multiclass_accuracy(y_pred, y_true):
     y_pred = argmax(y_pred, axis=1)
     y_true = argmax(y_true, axis=1)
     return accuracy_score(y_true, y_pred)
@@ -31,8 +32,8 @@ class BinaryAccuracy(Metric):
         super().__init__()
         self.name = "binary_accuracy"
 
-    def __call__(self, y_true, y_pred):
-        return _binary_accuracy(y_true, y_pred)
+    def __call__(self, y_pred, y_true):
+        return _binary_accuracy(y_pred, y_true)
 
 
 # define class for multiclass accuracy
@@ -41,6 +42,6 @@ class MulticlassAccuracy(Metric):
         super().__init__()
         self.name = "multiclass_accuracy"
 
-    def __call__(self, y_true, y_pred):
-        return _multiclass_accuracy(y_true, y_pred)
+    def __call__(self, y_pred, y_true):
+        return _multiclass_accuracy(y_pred, y_true)
 

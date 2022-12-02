@@ -4,10 +4,9 @@ from itertools import zip_longest
 
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
-import sklearn.datasets
 
-TRAIN_FMT = """\nEpoch: {} -  TR Loss: {} - VL Loss {} - TR accur. {}, VAL accur. {}\n----------------------------------------------------------------------------------------- """
 
+from sklearn.datasets import make_moons, load_digits
 
 def chunker(iterable, n, fillvalue=None):
     """
@@ -68,9 +67,15 @@ def load_monk1(test_size=0.2):
     X_train = enc.transform(train.drop('a1', axis=1)).toarray()
     y_train = train['a1'].values
 
+    X_train.shape = (len(X_train), 17, 1)
+    y_train.shape = (len(y_train), 1)
+
     enc.fit(test.drop('a1', axis=1))
     X_test = enc.transform(test.drop('a1', axis=1)).toarray()
     y_test = test['a1'].values
+
+    X_test.shape = (len(X_test), 17, 1)
+    y_test.shape = (len(y_test), 1)
 
     # train validation test split
     X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=test_size, random_state=42)
@@ -80,11 +85,39 @@ def load_monk1(test_size=0.2):
 
 # make moons dataset
 
-def make_moons(n_samples=1000, noise=0.1, random_state=42):
-    X, y = sklearn.datasets.make_moons(n_samples=n_samples, noise=noise, random_state=42)
-    # split
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+def load_moons(n_samples=1000, test_size=0.1, random_state=42, noise=0.2, validation=True):
+    X, y = make_moons(n_samples=n_samples, noise=noise, random_state=random_state)
+
+    X = np.expand_dims(X, 2)
+    y = np.expand_dims(y, 1)
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
+
+    if validation:
+        X_val, X_test, y_val, y_test = train_test_split(X_test, y_test, test_size=0.5, random_state=random_state)
+        return X_train, X_val, X_test, y_train, y_val, y_test
+
+
     return X_train, X_test, y_train, y_test
+
+
+def load_mnist(test_size=0.2, scale=1, random_state=42):
+    digits = load_digits()
+
+    X = digits.data
+    y = digits.target
+
+    # one hot encoding on y with sklearn
+    enc = OneHotEncoder(handle_unknown='ignore')
+    enc.fit(y.reshape(-1, 1))
+    y = enc.transform(y.reshape(-1, 1)).toarray()
+    y = np.expand_dims(y, 2)
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
+
+    return X_train, X_test, y_train, y_test
+
+
 
 
 
