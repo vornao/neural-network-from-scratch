@@ -7,7 +7,6 @@ from src.metrics import Metric
 from src.losses import Loss
 from tqdm.auto import tqdm
 import random
-from time import sleep
 
 fmt = '{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt}[{postfix}]'
 
