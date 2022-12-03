@@ -17,24 +17,14 @@ if __name__ == '__main__':
     # load monk1
     x_train, x_val, x_test, y_train, y_val, y_test = load_monk1()
 
-    y_train.shape = (y_train.shape[0], 1)
-    y_val.shape = (y_val.shape[0], 1)
-
     model = network.Network(17)
     model.add_layer(8, ReLU())
     model.add_layer(1, Tanh())
 
-    stats = model.train(
-        x_train,
-        y_train,
-        x_val,
-        y_val,
+    stats = model.train((x_train, y_train), (x_val, y_val),
         metric=BinaryAccuracy(),
         loss=MeanSquaredError(),
         epochs=500,
-        eta=0.01,
-        verbose=True,
-        batch_size=1
     )
 
 
