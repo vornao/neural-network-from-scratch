@@ -52,7 +52,7 @@ Code has been first tested with moons datasets ([see here](https://scikit-learn.
 
 Four layers model (Binary input, 2 ReLU layers with 8 units each, single unit output with Sigmoid activation) has performed very well, with 86% accuracy on never-seen-before data.
 
-```> Model accuracy: 86.0%. ROC AUC Score: 0.86```
+```> Model accuracy: 100%. ROC AUC Score: 1.0```
 
 The following picture shows training statistics across 25 training epochs.
 
@@ -62,7 +62,7 @@ The following picture shows training statistics across 25 training epochs.
 
 ### Accuracy on MNIST digits dataset
 
-Similar results were acheived for the MNIST digits dataset [(here)](http://yann.lecun.com/exdb/mnist/), with an accuracy of 87% on Test set. Learning curve below.
+Similar results were acheived for the MNIST digits dataset [(here)](http://yann.lecun.com/exdb/mnist/), with an accuracy of 94.5% on Test set. Learning curve below.
 
 ![MNIST training curve](assets/mnist_tr_curve.png)
 
