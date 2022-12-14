@@ -12,15 +12,14 @@ def test_network_monk1():
     binary_accuracy = BinaryAccuracy()
 
     model = Network(17)
-    model.add_layer(4, ReLU())
+    model.add_layer(6, ReLU())
     model.add_layer(1, Tanh())
 
     model.train((x_train, y_train), (x_val, y_val),
         metric=binary_accuracy,
         loss=MeanSquaredError(),
         epochs=700,
-        verbose=False,
-    )
+        verbose=False)
 
     # compute accuracy
     y_pred = model.multiple_outputs(x_val)

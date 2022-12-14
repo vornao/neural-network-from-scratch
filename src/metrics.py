@@ -7,6 +7,7 @@ from numpy import argmax
 def _binary_accuracy(y_pred, y_true):
     y_pred = round(y_pred)
     y_pred.shape = y_true.shape
+
     return accuracy_score(y_true, y_pred)
 
 

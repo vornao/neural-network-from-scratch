@@ -5,8 +5,8 @@ from src.layers import Layer, InputLayer
 from src.activations import Activation
 from src.metrics import Metric
 from src.losses import Loss
-from tqdm.auto import tqdm
-import random
+from tqdm import tqdm
+from time import sleep
 
 fmt = '{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt}[{postfix}]'
 
@@ -94,13 +94,13 @@ class Network:
 
         train_data, train_labels = train
         val_data, val_labels = validation
-        bar = None
+
 
         if verbose:
             bar = tqdm(total=epochs, desc="Training", leave=True, bar_format=fmt)
 
         # TODO:
-        # - implement minibatch ??? training computing error for b sized training
+        # - implement minibatch training computing error for b sized training
         #   labels and passing it to backward prop function
         # - implement regularization
         # - implement momentum
@@ -112,10 +112,7 @@ class Network:
             # ((x1, d1), (x2, d2), ... , (x_batch_size, d_batch_size))
             # batched = chunker(zipped, batch_size)
 
-            #shuffle data, we're performing on-line training.
-            data, labels = self.shuffle_data(train_data, train_labels)
-
-            for x, target in zip(data, labels):
+            for x, target in zip(train_data, train_labels):
 
                 pred = self.__forward_prop__(x)
                 deltas = pred - target
@@ -126,6 +123,7 @@ class Network:
             # compute training error and accuracy for current epoch and append stats
             self.epoch_stats(epoch, train_data, train_labels, val_data, val_labels, metric, loss, verbose, bar)
 
+
         stats = {
             # "epochs": epochs,
             "train_loss": self.tr_stats,
@@ -135,15 +133,6 @@ class Network:
         }
 
         return stats
-
-    def shuffle_data(self, data, labels):
-        """
-        Shuffle data and labels.
-        """
-        samples = list(zip(data, labels))
-        random.shuffle(samples)
-        data, labels = zip(*samples)
-        return data, labels
 
     def epoch_stats(self, epoch, tr, tr_labels, val, val_labels, metric, loss, verbose, bar):
         """
@@ -166,10 +155,9 @@ class Network:
             self.val_stats.append(val_loss)
 
         epoch_stats = {
-            "epoch": epoch,
             "loss": tr_loss,
             "val_loss": val_loss,
-            "val_metric": val_metric,
+            "val_acc": val_metric,
         }
 
         if verbose:
