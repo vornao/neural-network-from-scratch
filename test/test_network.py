@@ -19,7 +19,7 @@ def test_network_monk1():
         metric=binary_accuracy,
         loss=MeanSquaredError(),
         epochs=700,
-        verbose=False)
+        verbose=True)
 
     # compute accuracy
     y_pred = model.multiple_outputs(x_val)

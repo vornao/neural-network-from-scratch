@@ -58,8 +58,8 @@ class SingleClassError(Error):
 # load monk dataset
 
 def load_monk1(test_size=0.2):
-    train = pd.read_csv('../data/monk/monks-1.train', sep=' ').drop(['a8'], axis=1)
-    test = pd.read_csv('../data/monk/monks-1.test', sep=' ').drop(['a8'], axis=1)
+    train = pd.read_csv('/Users/lilf4p/Developer/ml/neural-network-from-scratch/data/monk/monks-1.train', sep=' ').drop(['a8'], axis=1)
+    test = pd.read_csv('/Users/lilf4p/Developer/ml/neural-network-from-scratch/data/monk/monks-1.test', sep=' ').drop(['a8'], axis=1)
 
     enc = OneHotEncoder(handle_unknown='ignore')
     enc.fit(train.drop('a1', axis=1))
