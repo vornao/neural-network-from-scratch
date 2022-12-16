@@ -82,6 +82,57 @@ def load_monk1(test_size=0.2):
 
     return X_train, X_val, X_test, y_train, y_val, y_test
     
+#load monk2 dataset
+def load_monk2(test_size=0.2):
+    train = pd.read_csv('/Users/lilf4p/Developer/ml/neural-network-from-scratch/data/monk/monks-2.train', sep=' ').drop(['a8'], axis=1)
+    test = pd.read_csv('/Users/lilf4p/Developer/ml/neural-network-from-scratch/data/monk/monks-2.test', sep=' ').drop(['a8'], axis=1)
+
+    enc = OneHotEncoder(handle_unknown='ignore')
+    enc.fit(train.drop('a1', axis=1))
+
+    X_train = enc.transform(train.drop('a1', axis=1)).toarray()
+    y_train = train['a1'].values
+
+    X_train.shape = (len(X_train), 17, 1)
+    y_train.shape = (len(y_train), 1)
+
+    enc.fit(test.drop('a1', axis=1))
+    X_test = enc.transform(test.drop('a1', axis=1)).toarray()
+    y_test = test['a1'].values
+
+    X_test.shape = (len(X_test), 17, 1)
+    y_test.shape = (len(y_test), 1)
+
+    # train validation test split
+    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=test_size, random_state=42)
+
+    return X_train, X_val, X_test, y_train, y_val, y_test
+
+#load monk3 dataset
+def load_monk3(test_size=0.2):
+    train = pd.read_csv('/Users/lilf4p/Developer/ml/neural-network-from-scratch/data/monk/monks-3.train', sep=' ').drop(['a8'], axis=1)
+    test = pd.read_csv('/Users/lilf4p/Developer/ml/neural-network-from-scratch/data/monk/monks-3.test', sep=' ').drop(['a8'], axis=1)
+
+    enc = OneHotEncoder(handle_unknown='ignore')
+    enc.fit(train.drop('a1', axis=1))
+
+    X_train = enc.transform(train.drop('a1', axis=1)).toarray()
+    y_train = train['a1'].values
+
+    X_train.shape = (len(X_train), 17, 1)
+    y_train.shape = (len(y_train), 1)
+
+    enc.fit(test.drop('a1', axis=1))
+    X_test = enc.transform(test.drop('a1', axis=1)).toarray()
+    y_test = test['a1'].values
+
+    X_test.shape = (len(X_test), 17, 1)
+    y_test.shape = (len(y_test), 1)
+
+    # train validation test split
+    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=test_size, random_state=42)
+
+    return X_train, X_val, X_test, y_train, y_val, y_test
 
 # make moons dataset
 
@@ -124,8 +175,10 @@ def load_mnist(test_size=0.2, scale=1, random_state=42, validation=True):
 
     return X_train, X_test, y_train, y_test
 
-
-
+#run main for debugging
+#if __name__ == '__main__':
+    #load_monk3()
+    #load_monk2()
 
 
 

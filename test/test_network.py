@@ -1,8 +1,9 @@
 from src.network import Network
 from src.activations import ReLU, Tanh
 from src.losses import MeanSquaredError
+from src.regularizer import L1, L2
 from src.metrics import BinaryAccuracy
-from src.utils import load_monk1
+from src.utils import load_monk1, load_monk2, load_monk3
 
 def test_network_monk1():
 
@@ -17,7 +18,7 @@ def test_network_monk1():
 
     model.train((x_train, y_train), (x_val, y_val),
         metric=binary_accuracy,
-        loss=MeanSquaredError(),
+        loss=MeanSquaredError(L2(0.0001,model)),
         epochs=700,
         verbose=True)
 
@@ -26,4 +27,3 @@ def test_network_monk1():
     acc = binary_accuracy(y_pred, y_val)
 
     assert acc == 1
-
