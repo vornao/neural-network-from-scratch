@@ -18,7 +18,7 @@ def test_network_monk1():
     model.train((x_train, y_train), (x_val, y_val),
         metric=binary_accuracy,
         loss=MeanSquaredError(),
-        epochs=700,
+        epochs=1000,
         verbose=False)
 
     # compute accuracy
