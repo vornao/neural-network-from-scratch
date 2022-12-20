@@ -3,6 +3,7 @@ from src.activations import ReLU, Tanh
 from src.losses import MeanSquaredError
 from src.metrics import BinaryAccuracy
 from src.utils import load_monk1
+from src.regularizers import L2
 
 def test_network_monk1():
 
@@ -11,14 +12,14 @@ def test_network_monk1():
 
     binary_accuracy = BinaryAccuracy()
 
-    model = Network(17)
+    model = Network(17, regularizer=L2(0.0001))
     model.add_layer(6, ReLU())
     model.add_layer(1, Tanh())
 
     model.train((x_train, y_train), (x_val, y_val),
         metric=binary_accuracy,
         loss=MeanSquaredError(),
-        epochs=700,
+        epochs=2000,
         verbose=False)
 
     # compute accuracy

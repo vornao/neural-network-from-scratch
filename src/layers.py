@@ -1,18 +1,26 @@
 import numpy as np
 import src.activations as af
+import src.regularizers as reg
 
 
 class Layer:
     """Just a fully connected layer."""
  
     def __init__(
-        self, units: int, input_shape: int, activation_function: af.Activation, bias=0.5
+        self,
+        units: int,
+        input_shape: int,
+        activation_function:
+        af.Activation,
+        bias=0.5,
+        regularizer : reg.Regularizer = None
     ) -> None:
 
         # define shape of layer and number of units
         self.output_shape = units
         self.units = units
         self.activation = activation_function
+        self.regularizer = regularizer
 
         # randomly init weight matrix and biases
         self.W = np.random.uniform(low=-0.05, high=0.05, size=(input_shape, units))
@@ -36,11 +44,15 @@ class Layer:
         # compute dl to update weights and deltas to propagate back.
         dl = deltas * self.activation.derivative(self.last_net)
         delta_w = self.last_input @ dl.T
+        deltas_prop = self.W @ dl
 
-        self.W -= eta * delta_w
+        if self.regularizer:
+            self.W -= eta * delta_w + self.regularizer.gradient(self.W)
+        else:
+            self.W -= eta * delta_w
+
         self.bias -= dl * eta
 
-        deltas_prop = self.W @ dl
         return deltas_prop
 
     def __str__(self) -> str:
