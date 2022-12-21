@@ -2,6 +2,7 @@
 from sklearn.metrics import accuracy_score
 from numpy import round
 from numpy import argmax
+import numpy as np
 
 
 def _binary_accuracy(y_pred, y_true):
@@ -45,3 +46,15 @@ class MulticlassAccuracy(Metric):
     def __call__(self, y_pred, y_true):
         return _multiclass_accuracy(y_pred, y_true)
 
+class MeanEuclideanError(Metric):
+    def __init__(self):
+        super().__init__()
+        self.name = "mee"
+        
+    def __call__(self, y_pred, y_true):
+        
+        s = np.array([])
+        for o, t in zip(y_pred, y_true):
+            s = np.append(s, np.linalg.norm(o-t, 2))
+            
+        return np.mean(s)
