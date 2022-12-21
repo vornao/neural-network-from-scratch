@@ -117,8 +117,7 @@ class Network:
             for x, target in zip(train_data, train_labels):
 
                 pred = self.__forward_prop__(x)
-                deltas = pred - target
-
+                deltas = loss.backward(pred, target)
                 self.__backward_prop__(deltas=deltas, eta=eta)
 
 
