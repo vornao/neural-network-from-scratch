@@ -7,7 +7,6 @@ from src.metrics import Metric
 from src.losses import Loss
 from src.regularizers import Regularizer
 from tqdm import tqdm
-from time import sleep
 
 fmt = '{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt}[{postfix}]'
 
@@ -98,7 +97,7 @@ class Network:
         train_data, train_labels = train
         val_data, val_labels = validation
 
-
+        bar = None
         if verbose:
             self.bar = tqdm(total=epochs, desc="Training", leave=True, bar_format=fmt)
 
