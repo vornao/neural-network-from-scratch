@@ -20,17 +20,17 @@ def test_network_monk3():
 
     stats = model.train((x_train, y_train), (x_val, y_val),
         metric=binary_accuracy,
-        loss=MeanSquaredError(L2(0.005,model)),
-        epochs=1500,
+        loss=MeanSquaredError(L2(0.0005,model)),
+        epochs=8000,
         verbose=True,
         eta=0.0001)
 
     fig, axs = plt.subplots(1, 2, figsize=(15, 5))
 
-    sns.lineplot(stats['train_loss'], ax=axs[0])
-    sns.lineplot(stats['val_loss'], ax=axs[0])
-    sns.lineplot(stats['train_acc'], ax=axs[1])
-    sns.lineplot(stats['val_acc'], ax=axs[1])
+    sns.lineplot(stats['train_loss'], ax=axs[0], label='train-loss')
+    sns.lineplot(stats['val_loss'], ax=axs[0] , label='val-loss')
+    sns.lineplot(stats['train_acc'], ax=axs[1] , label='train-acc')
+    sns.lineplot(stats['val_acc'], ax=axs[1] , label='val-acc')
 
     plt.show()
 
