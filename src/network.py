@@ -5,6 +5,7 @@ from src.layers import Layer, InputLayer
 from src.activations import Activation
 from src.metrics import Metric
 from src.losses import Loss
+from src.regularizers import Regularizer
 from tqdm import tqdm
 
 fmt = '{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt}[{postfix}]'
@@ -20,13 +21,15 @@ class Network:
     Your dense neural network class.
     """
 
-    def __init__(self, input_shape: int) -> None:
+    def __init__(self, input_shape: int, regularizer: Regularizer = None) -> None:
         self.layers: List[Layer] = []
         self.layers.append(InputLayer(input_shape))
         self.tr_stats = []
         self.val_stats = []
         self.tr_err = []
         self.val_err = []
+        self.regularizer = regularizer
+        self.bar= None
 
 
     def add_layer(self, units, activation_function: Activation, bias=0.5):
@@ -35,7 +38,7 @@ class Network:
         activation function and units.
         """
         self.layers.append(
-            Layer(units, self.layers[-1].output_shape, activation_function, bias)
+            Layer(units, self.layers[-1].output_shape, activation_function, bias, regularizer=self.regularizer)
         )
 
     def __forward_prop__(self, x):
@@ -96,7 +99,7 @@ class Network:
 
         bar = None
         if verbose:
-            bar = tqdm(total=epochs, desc="Training", leave=True, bar_format=fmt)
+            self.bar = tqdm(total=epochs, desc="Training", leave=True, bar_format=fmt)
 
         # TODO:
         # - implement minibatch training computing error for b sized training
@@ -120,7 +123,7 @@ class Network:
 
 
             # compute training error and accuracy for current epoch and append stats
-            self.epoch_stats(epoch, train_data, train_labels, val_data, val_labels, metric, loss, verbose, bar)
+            self.epoch_stats(epoch, train_data, train_labels, val_data, val_labels, metric, loss, verbose, self.bar)
 
 
         stats = {
