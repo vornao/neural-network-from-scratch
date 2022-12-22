@@ -7,6 +7,7 @@ from src.metrics import Metric
 from src.losses import Loss
 from src.regularizers import Regularizer
 from tqdm import tqdm
+from src.callbacks import Callback
 
 fmt = '{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt}[{postfix}]'
 
@@ -30,6 +31,7 @@ class Network:
         self.val_err = []
         self.regularizer = regularizer
         self.bar= None
+        self.training = True
 
 
     def add_layer(self, units, activation_function: Activation, bias=0.5):
@@ -88,6 +90,7 @@ class Network:
             eta=10e-3,
             batch_size=1,
             verbose=True,
+            callbacks: List[Callback] = None,
     ):
         """
         Train network with given data and labels for requested epoch.
@@ -109,7 +112,7 @@ class Network:
 
 
         for epoch in range(0, epochs):
-            if not training:
+            if not self.training:
                 break
             # make batch_size sized tuples
             # ((x1, d1), (x2, d2), ... , (x_batch_size, d_batch_size))
@@ -124,8 +127,8 @@ class Network:
 
             # compute training error and accuracy for current epoch and append stats
             self.epoch_stats(epoch, train_data, train_labels, val_data, val_labels, metric, loss, verbose, self.bar)
-
-            if callback:
+            
+            for callback in callbacks:
                 callback(self)
 
         stats = {
@@ -167,4 +170,5 @@ class Network:
         if verbose:
             update_bar(bar, epoch_stats)
 
-        return epoch_stats
+    def get_loss_value (self):
+        return self.val_stats[-1]

@@ -1,5 +1,4 @@
 import numpy as np
-from src.network import Network
 from src.layers import Layer
 
 
@@ -14,6 +13,10 @@ class Callback:
 
 # TODO: restore best weights
 class EarlyStopping(Callback):
+    '''
+    Early stopping callback
+    patience: number of epochs to wait before stopping
+    '''
     def __init__(self, patience, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.patience = patience
@@ -25,11 +28,11 @@ class EarlyStopping(Callback):
 
     def __call__(self, network):
 
-        if network.loss < self.best_loss:
-            self.best_loss = network.loss
+        if network.get_loss_value() < self.best_loss:
+            self.best_loss = network.get_loss_value()
             self.counter = 0
 
-            for layer in network.layers:
+            for layer in network.layers[1:]:
                 self.best_weights.append(np.copy(layer.W))
                 self.best_biases.append(np.copy(layer.bias))
             # todo save bias
@@ -40,7 +43,7 @@ class EarlyStopping(Callback):
         if self.counter >= self.patience:
             network.training = False
 
-            for i, layer in enumerate(network.layers):
+            for i, layer in enumerate(network.layers[1:]):
                 layer.W = self.best_weights[i]
                 layer.bias = self.best_biases[i]
             print("Early stopping")
