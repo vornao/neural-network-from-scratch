@@ -4,6 +4,8 @@ from src.losses import MeanSquaredError
 from src.metrics import BinaryAccuracy
 from src.utils import load_monk1
 from src.regularizers import L2
+from src.callbacks import EarlyStopping
+
 
 def test_network_monk1():
 
@@ -20,7 +22,8 @@ def test_network_monk1():
         metric=binary_accuracy,
         loss=MeanSquaredError(),
         epochs=1000,
-        verbose=False)
+        verbose=False,
+        callbacks=[EarlyStopping(patience=100)])
 
     # compute accuracy
     y_pred = model.multiple_outputs(x_val)
