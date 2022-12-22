@@ -90,7 +90,7 @@ class Network:
             eta=10e-3,
             batch_size=1,
             verbose=True,
-            callbacks: List[Callback] = None,
+            callbacks: List[Callback] = [],
     ):
         """
         Train network with given data and labels for requested epoch.

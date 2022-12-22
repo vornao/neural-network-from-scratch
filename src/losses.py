@@ -15,7 +15,7 @@ class MeanSquaredError(Loss):
         return np.mean(np.square(pred - labels))
 
     def backward(self, pred, labels):
-        return np.mean(pred-labels)
+        return np.mean(pred-labels, keepdims=True, axis=1)
    
 
 # define binary crossentropy
