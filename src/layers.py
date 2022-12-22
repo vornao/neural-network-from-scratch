@@ -13,7 +13,8 @@ class Layer:
         activation_function:
         af.Activation,
         bias=0.5,
-        regularizer : reg.Regularizer = None
+        regularizer : reg.Regularizer = None,
+        inizializer : str = "uniform"
     ) -> None:
 
         # define shape of layer and number of units
@@ -21,10 +22,33 @@ class Layer:
         self.units = units
         self.activation = activation_function
         self.regularizer = regularizer
+        self.inizializer = inizializer
 
-        # randomly init weight matrix and biases
-        self.W = np.random.uniform(low=-0.05, high=0.05, size=(input_shape, units))
-        self.bias = np.random.uniform(low=-0.01, high=0.01, size=(units, 1))
+        # init weight matrix and biases
+        if self.inizializer == "uniform":
+            #print("uniform")
+            # init weights and biases matrix with uniform distribution
+            self.W = np.random.uniform(low=-0.05, high=0.05, size=(input_shape, units))
+            self.bias = np.random.uniform(low=-0.01, high=0.01, size=(units, 1))
+
+        elif self.inizializer == "xavier":
+            #print("xavier")
+            # init weights and biases matrix with Xavier initialization
+            self.W = np.random.uniform(low=-np.sqrt(1/(input_shape)), high=np.sqrt(1/(input_shape)), size=(input_shape, units))
+            self.bias = np.random.uniform(low=-np.sqrt(1/(input_shape)), high=np.sqrt(1/(input_shape)), size=(units, 1))
+
+        elif self.inizializer == "he":
+            #print("he")
+            # init weights and biases matrix with He initialization
+            self.W = np.random.uniform(low=-np.sqrt(2/(input_shape)), high=np.sqrt(2/(input_shape)), size=(input_shape, units))
+            self.bias = np.random.uniform(low=-np.sqrt(2/(input_shape)), high=np.sqrt(2/(input_shape)), size=(units, 1))
+        
+        else :
+            print("Inizializer not found. Run with default initialization...")
+            # init weights and biases matrix with default values
+            self.W = np.random.uniform(low=-0.05, high=0.05, size=(input_shape, units))
+            self.bias = np.random.uniform(low=-0.01, high=0.01, size=(units, 1))
+
         self.last_input = np.NaN
         self.last_net = np.NaN
         self.last_output = np.NaN
