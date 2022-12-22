@@ -109,7 +109,8 @@ class Network:
 
 
         for epoch in range(0, epochs):
-
+            if not training:
+                break
             # make batch_size sized tuples
             # ((x1, d1), (x2, d2), ... , (x_batch_size, d_batch_size))
             # batched = chunker(zipped, batch_size)
@@ -124,6 +125,8 @@ class Network:
             # compute training error and accuracy for current epoch and append stats
             self.epoch_stats(epoch, train_data, train_labels, val_data, val_labels, metric, loss, verbose, self.bar)
 
+            if callback:
+                callback(self)
 
         stats = {
             # "epochs": epochs,
