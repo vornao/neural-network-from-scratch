@@ -1,2 +1,5 @@
 /test/.pytest_cache/
 .idea/
+.DS_store
+__init__.py
+__pycache__
