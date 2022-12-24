@@ -46,14 +46,17 @@ class Layer:
         delta_w = self.last_input @ dl.T
         deltas_prop = self.W @ dl
 
-        if self.regularizer:
-            self.W -= eta * delta_w + self.regularizer.gradient(self.W) + nesterov * self.last_delta
-            self.last_delta =  eta * delta_w + self.regularizer.gradient(self.W) + nesterov * self.last_delta
-        else:
-            self.W -= eta * delta_w + nesterov * self.last_delta
-            self.last_delta = eta * delta_w + nesterov * self.last_delta
-        self.bias -= dl * eta
+        if nesterov:
+            delta_w = delta_w + nesterov * self.last_delta
+            self.last_delta = delta_w
 
+        if self.regularizer:
+            self.W -= eta * delta_w + self.regularizer.gradient(self.W)
+        else:
+            self.W -= eta * delta_w
+
+
+        self.bias -= dl * eta
         return deltas_prop
 
     def __str__(self) -> str:
