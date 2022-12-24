@@ -28,7 +28,7 @@ class Layer:
         self.last_input = np.NaN
         self.last_net = np.NaN
         self.last_output = np.NaN
-        self.last_delta = 0 # last delta used for momentum
+        self.last_delta = np.zeros(self.W.shape) # last delta used for momentum
     def net(self, x):
         return (self.W.T @ x) + self.bias
   
@@ -48,10 +48,10 @@ class Layer:
 
         if self.regularizer:
             self.W -= eta * delta_w + self.regularizer.gradient(self.W) + nesterov * self.last_delta
-            self.last_delta = eta * delta_w + self.regularizer.gradient(self.W)
+            self.last_delta =  eta * delta_w + self.regularizer.gradient(self.W) + nesterov * self.last_delta
         else:
             self.W -= eta * delta_w + nesterov * self.last_delta
-            self.last_delta = eta * delta_w
+            self.last_delta = eta * delta_w + nesterov * self.last_delta
         self.bias -= dl * eta
 
         return deltas_prop
