@@ -2,9 +2,8 @@ import numpy as np
 import pandas as pd
 from itertools import zip_longest
 
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import OneHotEncoder, MinMaxScaler
 from sklearn.model_selection import train_test_split
-
 
 from sklearn.datasets import make_moons, load_digits
 
@@ -151,11 +150,20 @@ def load_mnist(test_size=0.2, scale=1, random_state=42, validation=True):
 
 
 
-
 def load_cup(test_size=0.2):
+    """
+    Load cup dataset
+    :param test_size: test size
+    """
+
     df = pd.read_csv("../data/cup/cup.train", comment="#", index_col='id', skipinitialspace=True)
     scaler = MinMaxScaler()
     scaled = pd.DataFrame(scaler.fit_transform(df), columns=df.columns)
+
     x_train, x_val, y_train, y_val = train_test_split(scaled.drop(["ty", 'tx'], axis=1).values, scaled[['tx','ty']].values, test_size=0.25, random_state=42)
-    x_train = np.expand_dims(x_train, 2) 
-    print(x_train)
+    x_train = np.expand_dims(x_train, 2)
+    x_val = np.expand_dims(x_val, 2)
+    y_train = np.expand_dims(y_train, 2)
+    y_val = np.expand_dims(y_val, 2)
+
+    return x_train, x_val, y_train, y_val
