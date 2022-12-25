@@ -172,3 +172,13 @@ class Network:
 
     def get_loss_value (self):
         return self.val_stats[-1]
+
+
+    def reset_model(self):
+        self.tr_stats = []
+        self.val_stats = []
+        self.tr_err = []
+        self.val_err = []
+
+        for layer in self.layers[1:]:
+            layer.reset()

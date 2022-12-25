@@ -29,6 +29,7 @@ class Layer:
         self.last_net = np.NaN
         self.last_output = np.NaN
         self.last_delta = np.zeros(self.W.shape) # last delta used for momentum
+    
     def net(self, x):
         return (self.W.T @ x) + self.bias
   
@@ -58,6 +59,15 @@ class Layer:
 
         self.bias -= dl * eta
         return deltas_prop
+
+    def reset(self):
+        self.last_input = np.NaN
+        self.last_net = np.NaN
+        self.last_output = np.NaN
+        self.last_delta = np.zeros(self.W.shape)
+        self.W = np.random.uniform(low=-0.05, high=0.05, size=self.W.shape)
+        self.bias = np.random.uniform(low=-0.01, high=0.01, size=self.bias.shape)
+
 
     def __str__(self) -> str:
         return f"Weights matrix = {self.W} \n, biases = {self.bias}"
