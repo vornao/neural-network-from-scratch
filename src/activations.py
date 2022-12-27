@@ -12,7 +12,6 @@ def relu(x):
 def sigmoid_d(x, a=1):
     return sigmoid(x, a) * (1 - sigmoid(x, a))
 
-
 def relu_d(x):
     return x > 0
 
