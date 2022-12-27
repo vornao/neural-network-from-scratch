@@ -30,9 +30,8 @@ class Network:
         self.tr_err = []
         self.val_err = []
         self.regularizer = regularizer
-        self.bar= None
+        self.bar = None
         self.training = True
-
 
     def add_layer(self, units, activation_function: Activation, bias=0.5):
         """
@@ -54,14 +53,14 @@ class Network:
         return out
 
     # TODO: remove pred-target cost evaluation to exploit minibatch training
-    def __backward_prop__(self, deltas, eta, batch_size=1):
+    def __backward_prop__(self, deltas, eta, nesterov, batch_size=1):
         """
         Perform backward propagation during training.
         """
         d = deltas
         # now compute backward prop for every other layer, except for input layer.
         for layer in reversed(self.layers[1: len(self.layers)]):
-            d = layer.update_weights(deltas=d, eta=eta)
+            d = layer.update_weights(deltas=d, eta=eta, nesterov=nesterov)
 
     def multiple_outputs(self, patterns):
         outputs = []
@@ -91,6 +90,7 @@ class Network:
             batch_size=1,
             verbose=True,
             callbacks: List[Callback] = [],
+            nesterov=0 # parameter for momentum
     ):
         """
         Train network with given data and labels for requested epoch.
@@ -110,7 +110,6 @@ class Network:
         # - implement regularization
         # - implement momentum
 
-
         for epoch in range(0, epochs):
             if not self.training:
                 break
@@ -122,14 +121,15 @@ class Network:
 
                 pred = self.__forward_prop__(x)
                 deltas = loss.backward(pred, target)
-                self.__backward_prop__(deltas=deltas, eta=eta)
+                self.__backward_prop__(deltas=deltas, eta=eta, nesterov=nesterov)
 
 
             # compute training error and accuracy for current epoch and append stats
             self.epoch_stats(epoch, train_data, train_labels, val_data, val_labels, metric, loss, verbose, self.bar)
-            
+
             for callback in callbacks:
                 callback(self)
+
 
         stats = {
             # "epochs": epochs,
