@@ -12,7 +12,6 @@ def relu(x):
 def sigmoid_d(x, a=1):
     return sigmoid(x, a) * (1 - sigmoid(x, a))
 
-
 def relu_d(x):
     return x > 0
 
@@ -20,13 +19,16 @@ def relu_d(x):
 def softmax(x):
     return np.exp(x) / sum(np.exp(x))
 
-
+def sofmax_d(x):
+    return  softmax(x)*(1-softmax(x))
 def linear(x):
     return x
 
 
 def linear_d(x):
     return 1
+
+
 
 
 class Activation:
