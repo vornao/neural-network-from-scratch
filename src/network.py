@@ -33,13 +33,18 @@ class Network:
         self.bar = None
         self.training = True
 
-    def add_layer(self, units, activation_function: Activation, bias=0.5):
+    def add_layer(self, units, activation_function: Activation, bias=0.5, initializer : str = "uniform"):
         """
         Just add a new hidden layer to the network, with requested
         activation function and units.
+
+        units: number of units in the layer
+        activation_function: activation function to use
+        bias: bias to use
+        inizializer: inizializer to use for weights and biases (uniform, xavier, he)
         """
         self.layers.append(
-            Layer(units, self.layers[-1].output_shape, activation_function, bias, regularizer=self.regularizer)
+            Layer(units, self.layers[-1].output_shape, activation_function, bias, regularizer=self.regularizer, initializer=initializer)
         )
 
     def __forward_prop__(self, x):
@@ -49,7 +54,6 @@ class Network:
         out = x
         for layer in self.layers:
             out = layer.output(out)
-
         return out
 
     # TODO: remove pred-target cost evaluation to exploit minibatch training
