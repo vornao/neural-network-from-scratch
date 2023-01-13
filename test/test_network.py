@@ -23,7 +23,9 @@ def test_network_monk1():
         loss=MeanSquaredError(),
         epochs=1000,
         verbose=False,
-        callbacks=[EarlyStopping(patience=100)])
+        callbacks=[EarlyStopping(patience=100)],
+        nesterov=0.5
+                )
 
     # compute accuracy
     y_pred = model.multiple_outputs(x_val)

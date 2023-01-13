@@ -32,10 +32,14 @@ class EarlyStopping(Callback):
             self.best_loss = network.get_loss_value()
             self.counter = 0
 
+            del self.best_weights
+            del self.best_biases
+            self.best_weights = []
+            self.best_biases = []
+            
             for layer in network.layers[1:]:
                 self.best_weights.append(np.copy(layer.W))
                 self.best_biases.append(np.copy(layer.bias))
-            # todo save bias
 
         else:
             self.counter += 1
