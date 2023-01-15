@@ -18,21 +18,22 @@ def grid_search(
         nesterov=(0.5,),
         reg_type=(None,),
         reg_val=(1e-10,),
+        initializer=("uniform", "xavier", "he"),
         metric_decreasing=0,
         epochs=100
 ):
-    parameters = product(eta, nesterov, reg_type, reg_val)
+    parameters = product(eta, nesterov, reg_type, reg_val, initializer)
     param = {}  # dictionary accuracy : set of parameters
     for par in parameters:
-        [eta, nesterov, reg_type, reg_val] = par
+        [eta, nesterov, reg_type, reg_val, initializer] = par
         if reg_type is not None:
             model = Network(model_shape.layers[0].units, reg_type(reg_val))
         else:
             model = Network(model_shape.layers[0].units)
         for layer in model_shape.layers[1:]:
-            model.add_layer(layer.units, layer.activation)
+            model.add_layer(layer.units, layer.activation, initializer=initializer)
 
-        print("eta=", eta, "nesterov=", nesterov, "reg ", reg_type, "lambda =", reg_val)
+        print("eta=", eta, "nesterov=", nesterov, "reg ", reg_type, "lambda =", reg_val, "initialization=", initializer)
         model.train(train=(x_train, y_train), validation=(x_val, y_val), metric=metric, loss=loss,
                     epochs=epochs, eta=eta, nesterov=nesterov, verbose=True)
         y_pred = model.multiple_outputs(x_val)
@@ -56,21 +57,22 @@ def grid_search_cv(
         nesterov=(0.5,),
         reg_type=(None,),
         reg_val=(1e-10,),
+        initializer=("uniform", "he", "xavier"),
         metric_decreasing=0,
         epochs=100
 ):
-    parameters = product(eta, nesterov, reg_type, reg_val)
+    parameters = product(eta, nesterov, reg_type, reg_val, initializer)
     param = {}  # dictionary accuracy : set of parameters
     for par in parameters:
-        [eta, nesterov, reg_type, reg_val] = par
+        [eta, nesterov, reg_type, reg_val, initializer] = par
         if reg_type is not None:
             model = Network(model_shape.layers[0].units, reg_type(reg_val))
         else:
             model = Network(model_shape.layers[0].units)
         for layer in model_shape.layers[1:]:
-            model.add_layer(layer.units, layer.activation)
+            model.add_layer(layer.units, layer.activation, initializer=initializer)
 
-        print("eta=", eta, "nesterov=", nesterov, "reg ", reg_type, "lambda =", reg_val)
+        print("eta=", eta, "nesterov=", nesterov, "reg ", reg_type, "lambda =", reg_val, "init technique=", initializer)
         acc = kfold_cv(model=model, x=x, y=y, k=5,  eta=eta, nesterov=nesterov, verbose=True, epochs=epochs
                        , metric=metric, loss=loss)
         param.update({acc: par})
