@@ -9,7 +9,7 @@ from src.callbacks import EarlyStopping, Callback
 import numpy as np
 
 
-def kfold_cv(model: Network, x, y, k=5, return_mean=True, **kwargs):
+def kfold_cv(model: Network, x, y, k=5, **kwargs):
     """
     Perform k-fold cross validation on the given dataset.
     :param model: the network to train (instance of Network)
@@ -34,7 +34,12 @@ def kfold_cv(model: Network, x, y, k=5, return_mean=True, **kwargs):
     callbacks = kwargs.get('callbacks', [])
     verbose = kwargs.get('verbose', False)
     nesterov = kwargs.get('nesterov', 0)
+    scaler = kwargs.get('scaler', None)
     accuracies = []
+    losses = []
+    val_losses = []
+    history = []
+ 
     for i in range(k):
         x_train = np.concatenate(x_folds[:i] + x_folds[i + 1:])
         y_train = np.concatenate(y_folds[:i] + y_folds[i + 1:])
@@ -52,11 +57,19 @@ def kfold_cv(model: Network, x, y, k=5, return_mean=True, **kwargs):
 
         # compute accuracy
         y_pred = model.multiple_outputs(x_val)
-        acc = metric(y_pred, y_val)
-        accuracies.append(acc)
 
-    if return_mean:
-        return np.mean(accuracies)
+        if scaler is not None:
+            y_pred_new = scaler.inverse_transform(y_pred.reshape((y_pred.shape[0], y_pred.shape[1]))).reshape(y_pred.shape)
+            y_val_new = scaler.inverse_transform(y_val.reshape((y_val.shape[0], y_val.shape[1]))).reshape(y_val.shape)
+            accuracies.append(metric(y_pred_new, y_val_new))
+            val_losses.append(loss.loss(y_pred_new, y_val_new))
+            losses.append(loss.loss(model.multiple_outputs(x_train), y_train))
 
-    return accuracies
+        else:
+            accuracies.append(metric(y_pred, y_val))
+            val_losses.append(loss.loss(y_pred, y_val))
+            losses.append(loss.loss(model.multiple_outputs(x_train), y_train))
+
+    
+    return {'accuracies': np.mean(accuracies), 'losses': np.mean(losses), 'val_losses': np.mean(val_losses)}
 

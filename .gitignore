@@ -3,3 +3,4 @@
 .DS_store
 __init__.py
 __pycache__
+venv

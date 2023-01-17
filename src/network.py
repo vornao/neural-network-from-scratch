@@ -176,3 +176,7 @@ class Network:
 
     def get_loss_value (self):
         return self.val_stats[-1]
+
+    def reset_weights(self):
+        for layer in self.layers:
+            layer.init_layer()

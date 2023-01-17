@@ -1,3 +1,7 @@
+import sys
+# append parent directory to path
+sys.path.append("..")
+
 from src.network import Network
 from src.activations import ReLU, Tanh
 from src.losses import MeanSquaredError

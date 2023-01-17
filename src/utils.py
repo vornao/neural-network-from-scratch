@@ -150,20 +150,31 @@ def load_mnist(test_size=0.2, scale=1, random_state=42, validation=True):
 
 
 
-def load_cup(test_size=0.2):
+def load_cup(test_size=0.2, validation=True, scale_outputs=True):
     """
     Load cup dataset
     :param test_size: test size
     """
 
-    df = pd.read_csv("../data/cup/cup.train", comment="#", index_col='id', skipinitialspace=True)
-    scaler = MinMaxScaler()
-    scaled = pd.DataFrame(scaler.fit_transform(df), columns=df.columns)
+    df = pd.read_csv("../data/cup/cup.internal.train", comment="#", index_col='id', skipinitialspace=True)
+    if scale_outputs:
+        scaler = MinMaxScaler()
+        df[['tx', 'ty']] = scaler.fit_transform(df[['tx', 'ty']])
 
-    x_train, x_val, y_train, y_val = train_test_split(scaled.drop(["ty", 'tx'], axis=1).values, scaled[['tx','ty']].values, test_size=0.25, random_state=42)
-    x_train = np.expand_dims(x_train, 2)
-    x_val = np.expand_dims(x_val, 2)
-    y_train = np.expand_dims(y_train, 2)
-    y_val = np.expand_dims(y_val, 2)
+
+    X = np.expand_dims(df.drop(["ty", 'tx'], axis=1).values, 2)
+    y = np.expand_dims(df[['tx', 'ty']].values, 2)
+
+    
+
+    x_train, x_val, y_train, y_val = train_test_split(X, y, test_size=0.25, random_state=42)
+
+    if not validation:
+        if scale_outputs:
+            return X, y, scaler
+        else:
+            return X, y
+    if scale_outputs:
+        return x_train, x_val, y_train, y_val, scaler
 
     return x_train, x_val, y_train, y_val
