@@ -80,8 +80,6 @@ def grid_search_cv(
         print("eta=", eta, "nesterov=", nesterov, "reg ", reg_type, "lambda =", reg_val)
         acc = kfold_cv(model=model, x=x, y=y, k=3,  eta=eta, nesterov=nesterov, epochs=epochs, metric=metric, loss=loss, scaler=scaler, callbacks=[EarlyStopping(int(epochs/10))],verbose=True)
 
-
-
         history.append({'parameters': par, 'metrics': acc})
     
     return history
