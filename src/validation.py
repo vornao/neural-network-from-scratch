@@ -6,7 +6,9 @@ from src.utils import load_monk1
 from src.regularizers import L2
 from src.callbacks import EarlyStopping, Callback
 
+
 import numpy as np
+
 
 
 def kfold_cv(model: Network, x, y, k=5, **kwargs):
@@ -35,6 +37,8 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
     verbose = kwargs.get('verbose', False)
     nesterov = kwargs.get('nesterov', 0)
     scaler = kwargs.get('scaler', None)
+    return_dict = kwargs.get('return_dict', None)
+    pid = kwargs.get('pid', None)
     accuracies = []
     losses = []
     val_losses = []
@@ -71,6 +75,9 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
             losses.append(loss.loss(model.multiple_outputs(x_train), y_train))
             
         model.reset_weights()
-    
+
+        if return_dict is not None:
+            return_dict[pid] = {'accuracies': np.mean(accuracies), 'losses': np.mean(losses), 'val_losses': np.mean(val_losses)}
+
     return {'accuracies': np.mean(accuracies), 'losses': np.mean(losses), 'val_losses': np.mean(val_losses)}
 
