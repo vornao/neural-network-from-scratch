@@ -30,11 +30,11 @@ def grid_search_cv(
     else:
         parameters = product(eta, nesterov, reg_type, reg_val)
 
-    history = []
     jobs = []
     manager = mp.Manager()
     return_dict = manager.dict()
     params = {}
+    count = 0
 
     for par in parameters:
         [eta, nesterov, reg_type, reg_val] = par
@@ -66,15 +66,21 @@ def grid_search_cv(
                     proc.join()
                 jobs = []
             
-            proc[]
-            proc = mp.Process(target=kfold_cv, args=(model, x, y), kwargs={'k': n_folds, 'eta': eta, 'nesterov': nesterov, 'epochs': epochs, 'metric': metric, 'loss': loss, 'scaler': scaler, 'callbacks': [EarlyStopping(int(epochs/10))], 'return_dict': return_dict, 'pid': len(jobs)})
+            id = 'proc-'+str(count)
+            params[id] = {'eta': eta, 'nesterov': nesterov, 'reg_type': reg_type, 'reg_val': reg_val}
+
+            proc = mp.Process(target=kfold_cv, args=(model, x, y), kwargs={'k': n_folds, 'eta': eta, 'nesterov': nesterov, 'epochs': epochs, 'metric': metric, 'loss': loss, 'scaler': scaler, 'callbacks': [EarlyStopping(int(epochs/10))], 'return_dict': return_dict, 'pid': id})
             jobs.append(proc)
+
+            count+=1
             proc.start()
 
-            # acc = kfold_cv(model=model, x=x, y=y, k=n_folds, eta=eta, nesterov=nesterov, epochs=epochs, metric=metric, loss=loss, scaler=scaler, callbacks=[EarlyStopping(int(epochs/10))])
-            # history.append({'parameters': par, 'metrics': acc})
-
+    
     for proc in jobs:
         proc.join()
 
-    return return_dict
+    merged = {}
+    for key in params.keys():
+        merged[key] = (params[key], return_dict[key])
+
+    return merged

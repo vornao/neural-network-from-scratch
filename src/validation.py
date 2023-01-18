@@ -76,8 +76,12 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
             
         model.reset_weights()
 
-        if return_dict is not None:
-            return_dict[pid] = {'accuracies': np.mean(accuracies), 'losses': np.mean(losses), 'val_losses': np.mean(val_losses)}
+    if return_dict is not None:
+            return_dict[pid] = {
+                'accuracies': np.mean(accuracies), 
+                'losses': np.mean(losses), 
+                'val_losses': np.mean(val_losses), 
+            }
 
     return {'accuracies': np.mean(accuracies), 'losses': np.mean(losses), 'val_losses': np.mean(val_losses)}
 

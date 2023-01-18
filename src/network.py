@@ -180,3 +180,5 @@ class Network:
     def reset_weights(self):
         for layer in self.layers[1:]:
             layer.init_layer()
+
+        
