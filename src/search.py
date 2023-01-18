@@ -33,21 +33,21 @@ def grid_search_cv(
     history = []
     for par in parameters:
         [eta, nesterov, reg_type, reg_val] = par
-        
-        # create new model for each grid search.
-        if reg_type is not None:
-            model = Network(model_shape.layers[0].units, reg_type(reg_val))
-        else:
-            model = Network(model_shape.layers[0].units)
+        if (reg_type is not None and reg_val!=0) or (reg_type is None and reg_val==0)
+            # create new model for each grid search.
+            if reg_type is not None:
+                model = Network(model_shape.layers[0].units, reg_type(reg_val))
+            else:
+                model = Network(model_shape.layers[0].units)
 
-        
-        for layer in model_shape.layers[1:]:
-            model.add_layer(layer.units, layer.activation)
 
-        print("eta=", eta, "nesterov=", nesterov, "reg ", reg_type, "lambda =", reg_val)
-        acc = kfold_cv(model=model, x=x, y=y, k=n_folds,  eta=eta, nesterov=nesterov, epochs=epochs, metric=metric, loss=loss, scaler=scaler, callbacks=[EarlyStopping(int(epochs/10))],verbose=True)
+            for layer in model_shape.layers[1:]:
+                model.add_layer(layer.units, layer.activation)
 
-        history.append({'parameters': par, 'metrics': acc})
+            print("eta=", eta, "nesterov=", nesterov, "reg ", reg_type, "lambda =", reg_val)
+            acc = kfold_cv(model=model, x=x, y=y, k=n_folds,  eta=eta, nesterov=nesterov, epochs=epochs, metric=metric, loss=loss, scaler=scaler, callbacks=[EarlyStopping(int(epochs/10))])
+
+            history.append({'parameters': par, 'metrics': acc})
     
     return history
 
