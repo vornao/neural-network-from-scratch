@@ -33,7 +33,7 @@ def grid_search_cv(
     history = []
     for par in parameters:
         [eta, nesterov, reg_type, reg_val] = par
-        if (reg_type is not None and reg_val!=0) or (reg_type is None and reg_val==0)
+        if (reg_type is not None and reg_val!=0) or (reg_type is None and reg_val==0):
             # create new model for each grid search.
             if reg_type is not None:
                 model = Network(model_shape.layers[0].units, reg_type(reg_val))
