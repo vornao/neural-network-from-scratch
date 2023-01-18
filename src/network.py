@@ -6,7 +6,7 @@ from src.activations import Activation
 from src.metrics import Metric
 from src.losses import Loss
 from src.regularizers import Regularizer
-from tqdm import tqdm
+from tqdm.auto import tqdm
 from src.callbacks import Callback
 
 fmt = '{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt}[{postfix}]'
