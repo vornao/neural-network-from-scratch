@@ -50,7 +50,7 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
                     metric=metric,
                     loss=loss,
                     epochs=epochs,
-                    verbose=verbose,
+                    verbose=False,
                     nesterov=nesterov,
                     callbacks=callbacks,
                     eta=eta)
@@ -69,7 +69,8 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
             accuracies.append(metric(y_pred, y_val))
             val_losses.append(loss.loss(y_pred, y_val))
             losses.append(loss.loss(model.multiple_outputs(x_train), y_train))
-
+            
+        model.reset_weights()
     
     return {'accuracies': np.mean(accuracies), 'losses': np.mean(losses), 'val_losses': np.mean(val_losses)}
 
