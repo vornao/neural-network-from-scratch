@@ -20,6 +20,7 @@ def grid_search_cv(
     reg_type=[None],
     reg_val=[0],
     epochs=1000,
+    verbose=False,
     scaler=None,
 ):
 
@@ -35,7 +36,6 @@ def grid_search_cv(
     return_dict = manager.dict()
     params = {}
     count = 0
-
 
     for par in parameters:
         [eta, nesterov, reg_type, reg_val] = par
@@ -66,23 +66,41 @@ def grid_search_cv(
                 for proc in jobs:
                     proc.join()
                 jobs = []
-            
-            id = 'proc-'+str(count)
-            params[id] = {'eta': eta, 'nesterov': nesterov, 'reg_type': reg_type, 'reg_val': reg_val}
 
-            proc = mp.Process(target=kfold_cv, args=(model, x, y), kwargs={'k': n_folds, 'eta': eta, 'nesterov': nesterov, 'epochs': epochs, 'metric': metric, 'loss': loss, 'scaler': scaler, 'return_dict': return_dict, 'pid': id})
+            id = "proc-" + str(count)
+            params[id] = {
+                "eta": eta,
+                "nesterov": nesterov,
+                "reg_type": reg_type,
+                "reg_val": reg_val,
+            }
+
+            proc = mp.Process(
+                target=kfold_cv,
+                args=(model, x, y),
+                kwargs={
+                    "k": n_folds,
+                    "eta": eta,
+                    "nesterov": nesterov,
+                    "epochs": epochs,
+                    "metric": metric,
+                    "loss": loss,
+                    "scaler": scaler,
+                    "return_dict": return_dict,
+                    "pid": id,
+                    "verbose": verbose,
+                },
+            )
             jobs.append(proc)
 
-            count+=1
+            count += 1
             proc.start()
 
-    
     for proc in jobs:
         proc.join()
 
     merged = {}
     for key in params.keys():
         merged[key] = (params[key], return_dict[key])
-
 
     return merged
