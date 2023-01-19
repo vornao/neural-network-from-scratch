@@ -91,7 +91,6 @@ class Network:
             loss: Loss,
             epochs=25,
             eta=10e-3,
-            batch_size=1,
             verbose=True,
             callbacks: List[Callback] = [],
             nesterov=0 # parameter for momentum
@@ -179,6 +178,12 @@ class Network:
         return self.val_stats[-1]
 
     def reset_weights(self):
+        self.val_stats = []
+        self.tr_stats = []
+        self.val_err = []
+        self.tr_err = []
+        self.training = True
+
         for layer in self.layers[1:]:
             layer.init_layer()
 

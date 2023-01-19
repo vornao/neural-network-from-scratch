@@ -1,7 +1,7 @@
 from src.network import Network
 from src.losses import MeanSquaredError
 from src.metrics import BinaryAccuracy
-from src.callbacks import EarlyStopping
+from src.callbacks import EarlyStopping, ToleranceEarlyStopping
 import numpy as np
 
 
@@ -46,14 +46,15 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
         y_train = np.concatenate(y_folds[:i] + y_folds[i + 1:])
         x_val = x_folds[i]
         y_val = y_folds[i]
-        print("fitting fold", i, "of", k, ".")
+        print("fitting fold", i, "of", k+1, ".")
+
         model.train((x_train, y_train), (x_val, y_val),
                     metric=metric,
                     loss=loss,
                     epochs=epochs,
                     verbose=verbose,
                     nesterov=nesterov,
-                    callbacks=[callbacks[0](int(epochs/10))],
+                    callbacks=[callbacks[0](epochs/100*5)],
                     eta=eta)
 
         # compute accuracy

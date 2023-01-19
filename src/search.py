@@ -2,9 +2,7 @@ from src.network import Network
 from src.losses import MeanSquaredError
 from src.metrics import BinaryAccuracy
 from itertools import product
-from heapq import nlargest, nsmallest
 from src.validation import kfold_cv
-from src.callbacks import EarlyStopping
 import multiprocessing as mp
 
 
