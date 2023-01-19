@@ -106,7 +106,7 @@ class Network:
 
         bar = None
         if verbose:
-            self.bar = tqdm(total=epochs, desc="Training", leave=True, bar_format=fmt)
+            self.bar = tqdm(total=epochs, desc="Training", bar_format=fmt)
 
         # TODO:
         # - implement minibatch training computing error for b sized training
@@ -142,7 +142,8 @@ class Network:
             "train_acc": self.tr_err,
             "val_acc": self.val_err,
         }
-
+        if verbose:
+            self.bar.close()
         return stats
 
     def epoch_stats(self, epoch, tr, tr_labels, val, val_labels, metric, loss, verbose, bar):

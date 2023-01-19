@@ -36,6 +36,7 @@ def grid_search_cv(
     params = {}
     count = 0
 
+
     for par in parameters:
         [eta, nesterov, reg_type, reg_val] = par
         if (reg_type is not None and reg_val != 0) or (
@@ -82,5 +83,6 @@ def grid_search_cv(
     merged = {}
     for key in params.keys():
         merged[key] = (params[key], return_dict[key])
+
 
     return merged

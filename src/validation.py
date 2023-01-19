@@ -1,12 +1,7 @@
 from src.network import Network
-from src.activations import ReLU, Tanh
-from src.losses import MeanSquaredError, Loss
-from src.metrics import BinaryAccuracy, Metric
-from src.utils import load_monk1
-from src.regularizers import L2
-from src.callbacks import EarlyStopping, Callback
-
-
+from src.losses import MeanSquaredError
+from src.metrics import BinaryAccuracy
+from src.callbacks import EarlyStopping
 import numpy as np
 
 
@@ -39,11 +34,11 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
     scaler = kwargs.get('scaler', None)
     return_dict = kwargs.get('return_dict', None)
     pid = kwargs.get('pid', None)
+
+    # initialize lists to store accuracies
     accuracies = []
     losses = []
     val_losses = []
-    history = []
-
     
  
     for i in range(k):
@@ -51,8 +46,7 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
         y_train = np.concatenate(y_folds[:i] + y_folds[i + 1:])
         x_val = x_folds[i]
         y_val = y_folds[i]
-        print("fitting fold", i, "of", k, "")
-
+        print("fitting fold", i, "of", k, ".")
         model.train((x_train, y_train), (x_val, y_val),
                     metric=metric,
                     loss=loss,
@@ -78,6 +72,7 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
             losses.append(loss.loss(model.multiple_outputs(x_train), y_train))
             
         model.reset_weights()
+
 
     if return_dict is not None:
             return_dict[pid] = {
