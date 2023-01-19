@@ -47,7 +47,6 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
         y_train = np.concatenate(y_folds[:i] + y_folds[i + 1:])
         x_val = x_folds[i]
         y_val = y_folds[i]
-        print("fitting fold", i+1, "of", k, ".")
 
         model.train((x_train, y_train), (x_val, y_val),
                     metric=metric,
