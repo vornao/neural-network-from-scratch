@@ -4,6 +4,7 @@ from src.metrics import BinaryAccuracy
 from itertools import product
 from src.validation import kfold_cv
 import multiprocessing as mp
+from tqdm import tqdm
 
 
 def grid_search_cv(
@@ -24,11 +25,13 @@ def grid_search_cv(
 ):
 
     parameters = None
-
+    n_tries = 0
     if reg_val == 0 or reg_type is None:
         parameters = product(eta, nesterov)
+        n_tries = len(eta) * len(nesterov)
     else:
         parameters = product(eta, nesterov, reg_type, reg_val)
+        n_tries = len(eta) * len(nesterov) * len(reg_type) * len(reg_val)
 
     jobs = []
     manager = mp.Manager()
@@ -36,7 +39,12 @@ def grid_search_cv(
     params = {}
     count = 0
 
+    print('Gridsearch: exploring ' + str(n_tries) + ' combinations.')
+
+    bar = tqdm(total=n_tries)
+
     for par in parameters:
+        
         [eta, nesterov, reg_type, reg_val] = par
         if (reg_type is not None and reg_val != 0) or (
             reg_type is None and reg_val == 0
@@ -49,9 +57,9 @@ def grid_search_cv(
 
             for layer in model_shape.layers[1:]:
                 model.add_layer(layer.units, layer.activation)
-
-            print(
-                "eta=",
+            
+            """
+            print("eta=",
                 eta,
                 "nesterov=",
                 nesterov,
@@ -60,10 +68,12 @@ def grid_search_cv(
                 "lambda =",
                 reg_val,
             )
+            """
             # spawn 4 processes at a time
             if len(jobs) >= workers:
                 for proc in jobs:
                     proc.join()
+                    bar.update(1)
                 jobs = []
 
             id = "proc-" + str(count)
@@ -87,7 +97,7 @@ def grid_search_cv(
                     "scaler": scaler,
                     "return_dict": return_dict,
                     "pid": id,
-                    "verbose": verbose,
+                    "verbose": False,
                 },
             )
             jobs.append(proc)
@@ -97,9 +107,11 @@ def grid_search_cv(
 
     for proc in jobs:
         proc.join()
+        bar.update(1)
 
     merged = {}
     for key in params.keys():
         merged[key] = (params[key], return_dict[key])
 
+    bar.close()
     return merged

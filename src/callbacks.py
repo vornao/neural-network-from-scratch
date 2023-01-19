@@ -17,13 +17,14 @@ class EarlyStopping(Callback):
     Early stopping callback
     patience: number of epochs to wait before stopping
     '''
-    def __init__(self, patience, *args, **kwargs):
+    def __init__(self, patience, verbose=False, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.patience = patience
         self.best_loss = np.Inf
         self.counter = 0
         self.best_weights = []
         self.best_biases = []
+        self.verbose = verbose
 
 
     def __call__(self, network):
@@ -50,7 +51,8 @@ class EarlyStopping(Callback):
             for i, layer in enumerate(network.layers[1:]):
                 layer.W = self.best_weights[i]
                 layer.bias = self.best_biases[i]
-            print("Early stopping")
+            if self.verbose:
+                print("Early stopping")
 
             return True
 
