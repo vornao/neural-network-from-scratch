@@ -19,8 +19,8 @@ def test_network_monk1():
     binary_accuracy = BinaryAccuracy()
 
     model = Network(17)
-    model.add_layer(6, ReLU(), inizializer="xavier")
-    model.add_layer(1, Tanh(), inizializer="xavier")
+    model.add_layer(6, ReLU(), initializer="xavier")
+    model.add_layer(1, Tanh(), initializer="xavier")
 
     model.train((x_train, y_train), (x_val, y_val),
         metric=binary_accuracy,
