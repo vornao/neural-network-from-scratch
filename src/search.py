@@ -69,7 +69,7 @@ def grid_search_cv(
             id = 'proc-'+str(count)
             params[id] = {'eta': eta, 'nesterov': nesterov, 'reg_type': reg_type, 'reg_val': reg_val}
 
-            proc = mp.Process(target=kfold_cv, args=(model, x, y), kwargs={'k': n_folds, 'eta': eta, 'nesterov': nesterov, 'epochs': epochs, 'metric': metric, 'loss': loss, 'scaler': scaler, 'callbacks': [EarlyStopping(int(epochs/10))], 'return_dict': return_dict, 'pid': id})
+            proc = mp.Process(target=kfold_cv, args=(model, x, y), kwargs={'k': n_folds, 'eta': eta, 'nesterov': nesterov, 'epochs': epochs, 'metric': metric, 'loss': loss, 'scaler': scaler, 'return_dict': return_dict, 'pid': id})
             jobs.append(proc)
 
             count+=1

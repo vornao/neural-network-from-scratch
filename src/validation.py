@@ -33,7 +33,7 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
     loss = kwargs.get('loss', MeanSquaredError())
     epochs = kwargs.get('epochs', 100)
     eta = kwargs.get('eta', 10e-3)
-    callbacks = kwargs.get('callbacks', [])
+    callbacks = kwargs.get('callbacks', [EarlyStopping])
     verbose = kwargs.get('verbose', False)
     nesterov = kwargs.get('nesterov', 0)
     scaler = kwargs.get('scaler', None)
@@ -43,20 +43,23 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
     losses = []
     val_losses = []
     history = []
+
+    
  
     for i in range(k):
         x_train = np.concatenate(x_folds[:i] + x_folds[i + 1:])
         y_train = np.concatenate(y_folds[:i] + y_folds[i + 1:])
         x_val = x_folds[i]
         y_val = y_folds[i]
+        print("fitting fold", i, "of", k, "")
 
         model.train((x_train, y_train), (x_val, y_val),
                     metric=metric,
                     loss=loss,
                     epochs=epochs,
-                    verbose=False,
+                    verbose=verbose,
                     nesterov=nesterov,
-                    callbacks=callbacks,
+                    callbacks=[callbacks[0](int(epochs/10))],
                     eta=eta)
 
         # compute accuracy
