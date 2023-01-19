@@ -80,7 +80,7 @@ def grid_search_cv(
             params[id] = {
                 "eta": eta,
                 "nesterov": nesterov,
-                "reg_type": reg_type,
+                "reg_type": get_reg_as_string(reg_type),
                 "reg_val": reg_val,
             }
 
@@ -115,3 +115,12 @@ def grid_search_cv(
 
     bar.close()
     return merged
+
+
+def get_reg_as_string(reg_type):
+    s = str(reg_type)
+    if reg_type is None:
+        return "None"
+    else:
+        return 'L1' if s.find('L1') > -1 else 'L2'
+

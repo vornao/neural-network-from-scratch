@@ -178,3 +178,17 @@ def load_cup(test_size=0.2, validation=True, scale_outputs=True):
         return x_train, x_val, y_train, y_val, scaler
 
     return x_train, x_val, y_train, y_val
+
+
+def parse_results(results: dict) -> pd.DataFrame:
+
+    res = [val for val in results.values()]
+    results = pd.DataFrame({}, columns=[])
+    results['eta'] = [k[0]['eta'] for k in res]
+    results['nesterov'] = [k[0]['nesterov'] for k in res]
+    results['reg_type'] = [k[0]['reg_type'] for k in res]
+    results['reg_val'] = [k[0]['reg_val'] for k in res]
+    results['accuracy'] = [k[1]['accuracies'] for k in res]
+    results['loss'] = [k[1]['losses'] for k in res]
+    results['val_loss'] = [k[1]['val_losses'] for k in res]
+    return results
