@@ -22,6 +22,7 @@ def grid_search_cv(
     epochs=1000,
     verbose=False,
     scaler=None,
+    workers=4,
 ):
 
     parameters = None
@@ -62,7 +63,7 @@ def grid_search_cv(
                 reg_val,
             )
             # spawn 4 processes at a time
-            if len(jobs) >= 4:
+            if len(jobs) >= workers:
                 for proc in jobs:
                     proc.join()
                 jobs = []
