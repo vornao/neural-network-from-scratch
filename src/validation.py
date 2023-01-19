@@ -29,6 +29,7 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
     epochs = kwargs.get('epochs', 100)
     eta = kwargs.get('eta', 10e-3)
     callbacks = kwargs.get('callbacks', [EarlyStopping])
+    patience = kwargs.get('patience', epochs/100*5)
     verbose = kwargs.get('verbose', False)
     nesterov = kwargs.get('nesterov', 0)
     scaler = kwargs.get('scaler', None)
@@ -54,7 +55,7 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
                     epochs=epochs,
                     verbose=verbose,
                     nesterov=nesterov,
-                    callbacks=[callbacks[0](epochs/100*5)],
+                    callbacks=[callbacks[0](patience)],
                     eta=eta)
 
         # compute accuracy
