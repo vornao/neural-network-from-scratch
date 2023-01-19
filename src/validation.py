@@ -1,12 +1,9 @@
 from src.network import Network
-from src.activations import ReLU, Tanh
-from src.losses import MeanSquaredError, Loss
-from src.metrics import BinaryAccuracy, Metric
-from src.utils import load_monk1
-from src.regularizers import L2
-from src.callbacks import EarlyStopping, Callback
-
+from src.losses import MeanSquaredError
+from src.metrics import BinaryAccuracy
+from src.callbacks import EarlyStopping, ToleranceEarlyStopping
 import numpy as np
+
 
 
 def kfold_cv(model: Network, x, y, k=5, **kwargs):
@@ -31,28 +28,34 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
     loss = kwargs.get('loss', MeanSquaredError())
     epochs = kwargs.get('epochs', 100)
     eta = kwargs.get('eta', 10e-3)
-    callbacks = kwargs.get('callbacks', [])
+    callbacks = kwargs.get('callbacks', [EarlyStopping])
+    patience = kwargs.get('patience', epochs/100*5)
     verbose = kwargs.get('verbose', False)
     nesterov = kwargs.get('nesterov', 0)
     scaler = kwargs.get('scaler', None)
+    return_dict = kwargs.get('return_dict', None)
+    pid = kwargs.get('pid', None)
+
+    # initialize lists to store accuracies
     accuracies = []
     losses = []
     val_losses = []
-    history = []
+    
  
     for i in range(k):
         x_train = np.concatenate(x_folds[:i] + x_folds[i + 1:])
         y_train = np.concatenate(y_folds[:i] + y_folds[i + 1:])
         x_val = x_folds[i]
         y_val = y_folds[i]
+        print("fitting fold", i+1, "of", k, ".")
 
         model.train((x_train, y_train), (x_val, y_val),
                     metric=metric,
                     loss=loss,
                     epochs=epochs,
-                    verbose=False,
+                    verbose=verbose,
                     nesterov=nesterov,
-                    callbacks=callbacks,
+                    callbacks=[callbacks[0](patience)],
                     eta=eta)
 
         # compute accuracy
@@ -71,6 +74,14 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
             losses.append(loss.loss(model.multiple_outputs(x_train), y_train))
             
         model.reset_weights()
-    
+
+
+    if return_dict is not None:
+            return_dict[pid] = {
+                'accuracies': np.mean(accuracies), 
+                'losses': np.mean(losses), 
+                'val_losses': np.mean(val_losses), 
+            }
+
     return {'accuracies': np.mean(accuracies), 'losses': np.mean(losses), 'val_losses': np.mean(val_losses)}
 
