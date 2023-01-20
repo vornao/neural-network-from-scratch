@@ -75,7 +75,6 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
             # MSE
             val_losses.append(loss.loss(y_pred_new, y_val_new))
 
-           
             losses.append(loss.loss(model.multiple_outputs(x_train), y_train))
 
         else:
@@ -91,6 +90,7 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
                 'accuracies': np.mean(accuracies), 
                 'losses': np.mean(losses), 
                 'val_losses': np.mean(val_losses), 
+                'tr_accuracies': np.mean(tr_accuracies)
             }
 
     return {'accuracies': np.mean(accuracies), 'losses': np.mean(losses), 'val_losses': np.mean(val_losses), 'tr_accuracies': np.mean(tr_accuracies)}
