@@ -65,19 +65,16 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
         if scaler is not None:
             # rescale ground truth data to original scale
             y_val_new = scaler.inverse_transform(y_val.reshape((y_val.shape[0], y_val.shape[1]))).reshape(y_val.shape)
-
             # rescale validation predictions to original scale
             y_pred_val_new = scaler.inverse_transform(y_pred_val.reshape((y_val.shape[0], y_val.shape[1]))).reshape(y_val.shape)
 
             # rescale ground truth train data to original scale
             y_train_new = scaler.inverse_transform(y_train.reshape((y_train.shape[0], y_train.shape[1]))).reshape(y_train.shape)
-
             # rescale train predictions to original scale
             y_pred_train_new = scaler.inverse_transform(y_pred_train.reshape((y_train.shape[0], y_train.shape[1]))).reshape(y_train.shape)
 
             # MEE VALIDATION
             val_mee.append(metric(y_pred_val_new, y_val_new))
-
             #MEE TR
             tr_mee.append(metric(y_pred_train_new, y_train_new))
 

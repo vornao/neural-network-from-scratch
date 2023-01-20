@@ -208,5 +208,4 @@ def parse_results(results: dict) -> pd.DataFrame:
     results['val_mee'] = [k[1]['val_mee'] for k in res]
     results['loss'] = [k[1]['losses'] for k in res]
     results['val_loss'] = [k[1]['val_losses'] for k in res]
-    results['tr_accuracy'] = [k[1]['tr_accuracies'] for k in res]
     return results
