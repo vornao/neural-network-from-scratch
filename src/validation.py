@@ -37,8 +37,8 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
     pid = kwargs.get('pid', None)
 
     # initialize lists to store accuracies
-    accuracies = []
-    tr_accuracies = []
+    val_mee = []
+    tr_mee = []
     losses = []
     val_losses = []
     
@@ -58,28 +58,37 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
                     callbacks=[callbacks[0](patience)],
                     eta=eta)
 
-        # compute accuracy
-        y_pred = model.multiple_outputs(x_val)
+        # compute accuracy on train and validation
+        y_pred_val = model.multiple_outputs(x_val)
+        y_pred_train = model.multiple_outputs(x_train)
 
         if scaler is not None:
-            y_pred_new = scaler.inverse_transform(y_pred.reshape((y_pred.shape[0], y_pred.shape[1]))).reshape(y_pred.shape)
+            # rescale ground truth data to original scale
             y_val_new = scaler.inverse_transform(y_val.reshape((y_val.shape[0], y_val.shape[1]))).reshape(y_val.shape)
+
+            # rescale validation predictions to original scale
+            y_pred_val_new = scaler.inverse_transform(y_pred_val.reshape((y_val.shape[0], y_val.shape[1]))).reshape(y_val.shape)
+
+            # rescale ground truth train data to original scale
             y_train_new = scaler.inverse_transform(y_train.reshape((y_train.shape[0], y_train.shape[1]))).reshape(y_train.shape)
-            
-            # MEE
-            accuracies.append(metric(y_pred_new, y_val_new))
+
+            # rescale train predictions to original scale
+            y_pred_train_new = scaler.inverse_transform(y_pred_train.reshape((y_train.shape[0], y_train.shape[1]))).reshape(y_train.shape)
+
+            # MEE VALIDATION
+            val_mee.append(metric(y_pred_val_new, y_val_new))
 
             #MEE TR
-            tr_accuracies.append(metric(y_pred_new, y_train_new))
+            tr_mee.append(metric(y_pred_train_new, y_train_new))
 
             # MSE
-            val_losses.append(loss.loss(y_pred_new, y_val_new))
-
-            losses.append(loss.loss(model.multiple_outputs(x_train), y_train))
+            val_losses.append(loss.loss(y_pred_val_new, y_val_new))
+            losses.append(loss.loss(y_pred_train_new, y_train_new))
 
         else:
-            accuracies.append(metric(y_pred, y_val))
-            val_losses.append(loss.loss(y_pred, y_val))
+            val_mee.append(metric(y_pred_val, y_val))
+            tr_mee.append(metric(y_pred_train, y_train))
+            val_losses.append(loss.loss(y_pred_val, y_val))
             losses.append(loss.loss(model.multiple_outputs(x_train), y_train))
             
         model.reset_weights()
@@ -87,11 +96,11 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
 
     if return_dict is not None:
             return_dict[pid] = {
-                'accuracies': np.mean(accuracies), 
+                'val_mee': np.mean(val_mee), 
                 'losses': np.mean(losses), 
                 'val_losses': np.mean(val_losses), 
-                'tr_accuracies': np.mean(tr_accuracies)
+                'tr_mee': np.mean(tr_mee)
             }
 
-    return {'accuracies': np.mean(accuracies), 'losses': np.mean(losses), 'val_losses': np.mean(val_losses), 'tr_accuracies': np.mean(tr_accuracies)}
+    return {'val_mee': np.mean(val_mee), 'losses': np.mean(losses), 'val_losses': np.mean(val_losses), 'tr_mee': np.mean(tr_mee)}
 

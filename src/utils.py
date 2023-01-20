@@ -204,7 +204,8 @@ def parse_results(results: dict) -> pd.DataFrame:
     results['nesterov'] = [k[0]['nesterov'] for k in res]
     results['reg_type'] = [k[0]['reg_type'] for k in res]
     results['reg_val'] = [k[0]['reg_val'] for k in res]
-    results['accuracy'] = [k[1]['accuracies'] for k in res]
+    results['tr_mee'] = [k[1]['tr_mee'] for k in res]
+    results['val_mee'] = [k[1]['val_mee'] for k in res]
     results['loss'] = [k[1]['losses'] for k in res]
     results['val_loss'] = [k[1]['val_losses'] for k in res]
     return results
