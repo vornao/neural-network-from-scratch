@@ -38,6 +38,7 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
 
     # initialize lists to store accuracies
     accuracies = []
+    tr_accuracies = []
     losses = []
     val_losses = []
     
@@ -63,8 +64,18 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
         if scaler is not None:
             y_pred_new = scaler.inverse_transform(y_pred.reshape((y_pred.shape[0], y_pred.shape[1]))).reshape(y_pred.shape)
             y_val_new = scaler.inverse_transform(y_val.reshape((y_val.shape[0], y_val.shape[1]))).reshape(y_val.shape)
+            y_train_new = scaler.inverse_transform(y_train.reshape((y_train.shape[0], y_train.shape[1]))).reshape(y_train.shape)
+            
+            # MEE
             accuracies.append(metric(y_pred_new, y_val_new))
+
+            #MEE TR
+            tr_accuracies.append(metric(y_pred_new, y_train_new))
+
+            # MSE
             val_losses.append(loss.loss(y_pred_new, y_val_new))
+
+           
             losses.append(loss.loss(model.multiple_outputs(x_train), y_train))
 
         else:
@@ -82,5 +93,5 @@ def kfold_cv(model: Network, x, y, k=5, **kwargs):
                 'val_losses': np.mean(val_losses), 
             }
 
-    return {'accuracies': np.mean(accuracies), 'losses': np.mean(losses), 'val_losses': np.mean(val_losses)}
+    return {'accuracies': np.mean(accuracies), 'losses': np.mean(losses), 'val_losses': np.mean(val_losses), 'tr_accuracies': np.mean(tr_accuracies)}
 
