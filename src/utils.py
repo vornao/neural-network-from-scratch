@@ -165,8 +165,6 @@ def load_cup(test_size=0.2, validation=True, scale_outputs=True):
     X = np.expand_dims(df.drop(["ty", 'tx'], axis=1).values, 2)
     y = np.expand_dims(df[['tx', 'ty']].values, 2)
 
-    
-
     x_train, x_val, y_train, y_val = train_test_split(X, y, test_size=0.25, random_state=42)
 
     if not validation:
@@ -178,6 +176,24 @@ def load_cup(test_size=0.2, validation=True, scale_outputs=True):
         return x_train, x_val, y_train, y_val, scaler
 
     return x_train, x_val, y_train, y_val
+
+def load_cup_test(scaler: MinMaxScaler = None):
+    """
+    Load cup dataset
+    :param test_size: test size
+    """
+
+    df = pd.read_csv("../data/cup/cup.internal.test", comment="#", index_col='id', skipinitialspace=True)
+
+    if scaler is not None:
+        df[['tx', 'ty']] = scaler.transform(df[['tx', 'ty']])
+
+
+    X = np.expand_dims(df.drop(["ty", 'tx'], axis=1).values, 2)
+    y = np.expand_dims(df[['tx', 'ty']].values, 2)
+
+
+    return X, y
 
 
 def parse_results(results: dict) -> pd.DataFrame:
