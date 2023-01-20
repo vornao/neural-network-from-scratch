@@ -179,6 +179,21 @@ def load_cup(test_size=0.2, validation=True, scale_outputs=True):
 
     return x_train, x_val, y_train, y_val
 
+def load_cup_test(scaler: MinMaxScaler = None):
+    """
+    Load cup dataset
+    :param test_size: test size
+    """
+
+    df = pd.read_csv("../data/cup/cup.internal.test", comment="#", index_col='id', skipinitialspace=True)
+    X = np.expand_dims(df.drop(["ty", 'tx'], axis=1).values, 2)
+    y = np.expand_dims(df[['tx', 'ty']].values, 2)
+
+    if scaler is not None:
+        y = scaler.transform(y)
+
+    return X, y
+
 
 def parse_results(results: dict) -> pd.DataFrame:
 
