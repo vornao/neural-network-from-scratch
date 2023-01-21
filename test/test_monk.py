@@ -15,9 +15,9 @@ def test_network_monk3():
 
     binary_accuracy = BinaryAccuracy()
 
-    model = Network(17, regularizer=L2(1e-6))
+    model = Network(17, regularizer=L2(1e-8))
     model.add_layer(4, ReLU())
-    model.add_layer(1, Tanh())
+    model.add_layer(1, Sigmoid())
 
     stats = model.train(
         (x_train, y_train),
@@ -26,7 +26,6 @@ def test_network_monk3():
         loss=MeanSquaredError(),
         epochs=1000,
         eta=0.01,
-        nesterov=0.7,
         verbose=False,
     )
 
@@ -55,7 +54,7 @@ def test_network_monk2():
         binary_accuracy = BinaryAccuracy()
 
         model = Network(17)
-        model.add_layer(4, ReLU())
+        model.add_layer(3, ReLU())
         model.add_layer(1, Sigmoid())
     
         stats = model.train(
@@ -65,7 +64,7 @@ def test_network_monk2():
             loss=MeanSquaredError(),
             epochs=1000,
             eta=0.01,
-            nesterov=0.8,
+            nesterov=0.7,
             verbose=False,
         )
     
@@ -94,7 +93,7 @@ def test_network_monk1():
     binary_accuracy = BinaryAccuracy()
 
     model = Network(17)
-    model.add_layer(4, ReLU())
+    model.add_layer(3, ReLU())
     model.add_layer(1, Sigmoid(), initializer="xavier")
 
     stats = model.train(
@@ -104,7 +103,7 @@ def test_network_monk1():
         loss=MeanSquaredError(),
         epochs=1000,
         eta=0.01,
-        nesterov=0.8,
+        nesterov=0.5,
         verbose=False,
     )
 
