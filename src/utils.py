@@ -179,8 +179,7 @@ def load_cup(test_size=0.2, validation=True, scale_outputs=True):
 
 def load_cup_test(scaler: MinMaxScaler = None):
     """
-    Load cup dataset
-    :param test_size: test size
+    Load cup dataset (blind test sed)
     """
 
     df = pd.read_csv("../data/cup/cup.internal.test", comment="#", index_col='id', skipinitialspace=True)
@@ -194,6 +193,16 @@ def load_cup_test(scaler: MinMaxScaler = None):
 
 
     return X, y
+
+
+def load_cup_blind_test(scaler: MinMaxScaler = None):
+    """
+    Load cup dataset
+    """
+
+    df = pd.read_csv("../data/cup/cup.blind.test", comment="#", index_col=0, skipinitialspace=True)
+    X = np.expand_dims(df.values, 2)
+    return X
 
 
 def parse_results(results: dict) -> pd.DataFrame:
