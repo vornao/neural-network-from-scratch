@@ -5,3 +5,4 @@ __init__.py
 __pycache__
 venv
 .vscode
+blind_result
