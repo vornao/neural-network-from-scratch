@@ -23,6 +23,23 @@ def grid_search_cv(
     scaler=None,
     workers=4,
 ):
+    """
+    Grid search cross validation.
+    @param model_shape: Network object with the desired network architecture.
+    @param x: training data.
+    @param y: training labels.
+    @param n_folds: number of folds for cross validation.
+    @param metric: metric to use for evaluation.
+    @param loss: loss function to use.
+    @param eta: learning rate.
+    @param nesterov: nesterov momentum strength.
+    @param reg_type: regularization type.
+    @param reg_val: regularization value.
+    @param epochs: number of epochs to train.
+    @param verbose: print progress bar.
+    @param scaler: scaler to use for data normalization.
+    @param workers: number of workers to use for parallelization.
+    """
 
     parameters = None
     n_tries = 0
@@ -39,12 +56,12 @@ def grid_search_cv(
     params = {}
     count = 0
 
-    print('Gridsearch: exploring ' + str(n_tries) + ' combinations.')
+    print("Gridsearch: exploring " + str(n_tries) + " combinations.")
 
     bar = tqdm(total=n_tries)
 
     for par in parameters:
-        
+
         [eta, nesterov, reg_type, reg_val] = par
         if (reg_type is not None and reg_val != 0) or (
             reg_type is None and reg_val == 0
@@ -57,19 +74,8 @@ def grid_search_cv(
 
             for layer in model_shape.layers[1:]:
                 model.add_layer(layer.units, layer.activation)
-            
-            """
-            print("eta=",
-                eta,
-                "nesterov=",
-                nesterov,
-                "reg ",
-                reg_type,
-                "lambda =",
-                reg_val,
-            )
-            """
-            # spawn 4 processes at a time
+
+            # spawn workers processes at a time
             if len(jobs) >= workers:
                 for proc in jobs:
                     proc.join()
@@ -122,5 +128,4 @@ def get_reg_as_string(reg_type):
     if reg_type is None:
         return "None"
     else:
-        return 'L1' if s.find('L1') > -1 else 'L2'
-
+        return "L1" if s.find("L1") > -1 else "L2"

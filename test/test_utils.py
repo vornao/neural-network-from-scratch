@@ -1,5 +1,6 @@
 from src.utils import load_mnist, load_moons, load_monk1
 
+
 def test_load_monk1():
     X_train, X_val, X_test, y_train, y_val, y_test = load_monk1()
     assert X_train.shape[1] == 17
@@ -49,6 +50,3 @@ def test_load_mnist():
     assert y_val.shape[1] == 10
     assert y_train.shape[2] == 1
     assert y_val.shape[2] == 1
-
-
-

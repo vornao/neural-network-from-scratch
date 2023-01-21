@@ -1,6 +1,7 @@
 import numpy as np
 from src.metrics import BinaryAccuracy, MulticlassAccuracy
 
+
 def test_binary_accuracy():
     acc = BinaryAccuracy()
     y_pred = np.array([0, 0, 0, 0, 1, 1, 1, 1])

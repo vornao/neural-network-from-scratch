@@ -17,7 +17,6 @@ def _multiclass_accuracy(y_pred, y_true):
     return accuracy_score(y_true, y_pred)
 
 
-# define base class Metric
 class Metric:
     def __init__(self, name=None):
         self.name = name
@@ -26,7 +25,6 @@ class Metric:
         raise NotImplementedError("I lay in the -- v o i d --")
 
 
-# define class for binary accuracy
 class BinaryAccuracy(Metric):
     def __init__(self):
         super().__init__()
@@ -36,7 +34,6 @@ class BinaryAccuracy(Metric):
         return _binary_accuracy(y_pred, y_true)
 
 
-# define class for multiclass accuracy
 class MulticlassAccuracy(Metric):
     def __init__(self):
         super().__init__()
@@ -45,15 +42,16 @@ class MulticlassAccuracy(Metric):
     def __call__(self, y_pred, y_true):
         return _multiclass_accuracy(y_pred, y_true)
 
+
 class MeanEuclideanError(Metric):
     def __init__(self):
         super().__init__()
         self.name = "mee"
-        
+
     def __call__(self, y_pred, y_true):
-        
+
         s = np.array([])
         for o, t in zip(y_pred, y_true):
-            s = np.append(s, np.linalg.norm(o-t, 2))
-            
+            s = np.append(s, np.linalg.norm(o - t, 2))
+
         return np.mean(s)

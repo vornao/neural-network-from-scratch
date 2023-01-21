@@ -9,9 +9,10 @@ from src.regularizers import Regularizer
 from tqdm import tqdm
 from src.callbacks import Callback
 
-fmt = '{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt}[{postfix}]'
+# the format for the progress bar
+fmt = "{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt}[{postfix}]"
 
-
+@staticmethod
 def update_bar(bar, stats):
     bar.set_postfix(stats)
     bar.update(1)
@@ -23,6 +24,11 @@ class Network:
     """
 
     def __init__(self, input_shape: int, regularizer: Regularizer = None) -> None:
+        """
+        Initialize the network with the input shape.
+        input_shape: number of input features
+        regularizer: regularizer to use
+        """
         self.layers: List[Layer] = []
         self.layers.append(InputLayer(input_shape))
         self.tr_stats = []
@@ -33,7 +39,13 @@ class Network:
         self.bar = None
         self.training = True
 
-    def add_layer(self, units, activation_function: Activation, bias=0.5, initializer : str = "uniform"):
+    def add_layer(
+        self,
+        units,
+        activation_function: Activation,
+        bias=0.5,
+        initializer: str = "uniform",
+    ):
         """
         Just add a new hidden layer to the network, with requested
         activation function and units.
@@ -44,7 +56,14 @@ class Network:
         inizializer: inizializer to use for weights and biases (uniform, xavier, he)
         """
         self.layers.append(
-            Layer(units, self.layers[-1].output_shape, activation_function, bias, regularizer=self.regularizer, initializer=initializer)
+            Layer(
+                units,
+                self.layers[-1].output_shape,
+                activation_function,
+                bias,
+                regularizer=self.regularizer,
+                initializer=initializer,
+            )
         )
 
     def __forward_prop__(self, x):
@@ -56,19 +75,19 @@ class Network:
             out = layer.output(out)
         return out
 
-    # TODO: remove pred-target cost evaluation to exploit minibatch training
-    def __backward_prop__(self, deltas, eta, nesterov, batch_size=1):
+    def __backward_prop__(self, deltas, eta, nesterov):
         """
         Perform backward propagation during training.
         """
         d = deltas
         # now compute backward prop for every other layer, except for input layer.
-        for layer in reversed(self.layers[1: len(self.layers)]):
+        for layer in reversed(self.layers[1 : len(self.layers)]):
             d = layer.update_weights(deltas=d, eta=eta, nesterov=nesterov)
 
     def multiple_outputs(self, patterns):
         outputs = []
 
+        # compute output for every pattern
         for p in patterns:
             p.shape = (len(p), 1)
             out = self.__forward_prop__(p)
@@ -84,20 +103,29 @@ class Network:
         return self.__forward_prop__(x)
 
     def train(
-            self,
-            train: tuple,
-            validation: tuple,
-            metric: Metric,
-            loss: Loss,
-            epochs=25,
-            eta=10e-3,
-            verbose=True,
-            callbacks: List[Callback] = [],
-            nesterov=0 # parameter for momentum
+        self,
+        train: tuple,
+        validation: tuple,
+        metric: Metric,
+        loss: Loss,
+        epochs=25,
+        eta=10e-3,
+        verbose=True,
+        callbacks: List[Callback] = [],
+        nesterov=0, 
     ):
         """
         Train network with given data and labels for requested epoch.
         Print progress after each epoch.
+        :train: tuple of training data and labels
+        :validation: tuple of validation data and labels
+        :metric: metric to use for evaluation
+        :loss: loss function to use
+        :epochs: number of epochs to train
+        :eta: learning rate
+        :verbose: print progress bar
+        :callbacks: list of callbacks to use, e.g. early stopping
+        :nesterov: nesterov momentum strength
         """
 
         train_data, train_labels = train
@@ -107,32 +135,32 @@ class Network:
         if verbose:
             self.bar = tqdm(total=epochs, desc="Training", bar_format=fmt)
 
-        # TODO:
-        # - implement minibatch training computing error for b sized training
-        #   labels and passing it to backward prop function
-        # - implement regularization
-        # - implement momentum
 
         for epoch in range(0, epochs):
             if not self.training:
                 break
-            # make batch_size sized tuples
-            # ((x1, d1), (x2, d2), ... , (x_batch_size, d_batch_size))
-            # batched = chunker(zipped, batch_size)
-
+            
             for x, target in zip(train_data, train_labels):
 
                 pred = self.__forward_prop__(x)
                 deltas = loss.backward(pred, target)
                 self.__backward_prop__(deltas=deltas, eta=eta, nesterov=nesterov)
 
-
             # compute training error and accuracy for current epoch and append stats
-            self.epoch_stats(epoch, train_data, train_labels, val_data, val_labels, metric, loss, verbose, self.bar)
+            self.epoch_stats(
+                epoch,
+                train_data,
+                train_labels,
+                val_data,
+                val_labels,
+                metric,
+                loss,
+                verbose,
+                self.bar,
+            )
 
             for callback in callbacks:
                 callback(self)
-
 
         stats = {
             # "epochs": epochs,
@@ -145,7 +173,9 @@ class Network:
             self.bar.close()
         return stats
 
-    def epoch_stats(self, epoch, tr, tr_labels, val, val_labels, metric, loss, verbose, bar):
+    def epoch_stats(
+        self, epoch, tr, tr_labels, val, val_labels, metric, loss, verbose, bar
+    ):
         """
         Compute network accuracy and loss given data and labels.
         """
@@ -174,10 +204,16 @@ class Network:
         if verbose:
             update_bar(bar, epoch_stats)
 
-    def get_loss_value (self):
+    def get_loss_value(self):
+        """
+        Return last loss value.
+        """
         return self.val_stats[-1]
 
     def reset_weights(self):
+        """
+        Reset weights and biases of every layer in the network.
+        """
         self.val_stats = []
         self.tr_stats = []
         self.val_err = []
@@ -186,5 +222,3 @@ class Network:
 
         for layer in self.layers[1:]:
             layer.init_layer()
-
-        
