@@ -100,5 +100,4 @@ class ToleranceEarlyStopping(Callback):
             for i, layer in enumerate(network.layers[1:]):
                 layer.W = self.best_weights[i]
                 layer.bias = self.best_biases[i]
-            print("Early stopping")
             return True

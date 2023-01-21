@@ -66,8 +66,8 @@ class Layer:
 
         if self.initializer == "uniform":
             # init weights and biases matrix with uniform distribution
-            self.W = np.random.uniform(low=-0.05, high=0.05, size=(input_shape, units))
-            self.bias = np.random.uniform(low=-0.01, high=0.01, size=(units, 1))
+            self.W = np.random.uniform(low=-0.5, high=0.5, size=(input_shape, units))
+            self.bias = np.random.uniform(low=-0.1, high=0.1, size=(units, 1))
 
         elif self.initializer == "xavier":
             # init weights and biases matrix with Xavier initialization
