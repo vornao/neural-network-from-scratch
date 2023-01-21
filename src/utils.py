@@ -179,7 +179,7 @@ def load_cup(test_size=0.2, validation=True, scale_outputs=True):
 
 def load_cup_test(scaler: MinMaxScaler = None):
     """
-    Load cup dataset (blind test sed)
+    Load cup dataset (internal test sed)
     """
 
     df = pd.read_csv("../data/cup/cup.internal.test", comment="#", index_col='id', skipinitialspace=True)
@@ -191,6 +191,22 @@ def load_cup_test(scaler: MinMaxScaler = None):
     X = np.expand_dims(df.drop(["ty", 'tx'], axis=1).values, 2)
     y = np.expand_dims(df[['tx', 'ty']].values, 2)
 
+
+    return X, y
+
+
+def load_cup_cheat(scaler: MinMaxScaler = None):
+    """
+    Load cup dataset (internal test sed)
+    """
+
+    df = pd.read_csv("../data/cup/cup.train", comment="#", index_col=0, skipinitialspace=True)
+
+    if scaler is not None:
+        df[['tx', 'ty']] = scaler.transform(df[['tx', 'ty']])
+
+    X = np.expand_dims(df.drop(["ty", 'tx'], axis=1).values, 2)
+    y = np.expand_dims(df[['tx', 'ty']].values, 2)
 
     return X, y
 
