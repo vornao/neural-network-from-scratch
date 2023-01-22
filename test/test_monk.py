@@ -1,3 +1,9 @@
+# Author: Giacomo Lagomarsini - Luca Miglior - Leonardo Stoppani
+# Date: 2023-01-23
+# License: MIT
+
+# unit tests for monks dataset. Run with "pytest" in the terminal.
+
 from src.network import Network
 from src.activations import ReLU, Sigmoid, Tanh
 from src.losses import MeanSquaredError
@@ -6,6 +12,7 @@ from src.utils import load_monk3, load_monk1, load_monk2
 from src.regularizers import L2
 import seaborn as sns
 import matplotlib.pyplot as plt
+
 
 # test monk 3
 def test_network_monk3():
@@ -88,15 +95,5 @@ def test_network_monk1():
     # compute accuracy
     y_pred = model.multiple_outputs(x_test)
     acc = binary_accuracy(y_pred, y_test)
-
-    # show graph
-    fig, axs = plt.subplots(1, 2, figsize=(15, 5))
-
-    sns.lineplot(stats["train_loss"], ax=axs[0], label="train-loss")
-    sns.lineplot(stats["val_loss"], ax=axs[0], label="val-loss")
-    sns.lineplot(stats["train_acc"], ax=axs[1], label="train-acc")
-    sns.lineplot(stats["val_acc"], ax=axs[1], label="val-acc")
-
-    plt.show()
 
     assert acc == 1

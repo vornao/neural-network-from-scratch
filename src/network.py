@@ -1,5 +1,8 @@
-import numpy as np
+# Author: Giacomo Lagomarsini - Luca Miglior - Leonardo Stoppani
+# Date: 2023-01-23
+# License: MIT
 
+import numpy as np
 from typing import List
 from src.layers import Layer, InputLayer
 from src.activations import Activation

@@ -1,3 +1,7 @@
+# Author: Giacomo Lagomarsini - Luca Miglior - Leonardo Stoppani
+# Date: 2023-01-23
+# License: MIT
+
 import numpy as np
 import src.activations as af
 import src.regularizers as reg

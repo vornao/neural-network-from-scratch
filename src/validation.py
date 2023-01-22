@@ -1,3 +1,7 @@
+# Author: Giacomo Lagomarsini - Luca Miglior - Leonardo Stoppani
+# Date: 2023-01-23
+# License: MIT
+
 from src.network import Network
 from src.losses import MeanSquaredError
 from src.metrics import BinaryAccuracy

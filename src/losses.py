@@ -1,5 +1,8 @@
-import numpy as np
+# Author: Giacomo Lagomarsini - Luca Miglior - Leonardo Stoppani
+# Date: 2023-01-23
+# License: MIT
 
+import numpy as np
 
 class Loss:
     def loss(self, pred, labels):

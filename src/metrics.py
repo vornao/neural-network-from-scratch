@@ -1,4 +1,7 @@
-# define binary accuracy
+# Author: Giacomo Lagomarsini - Luca Miglior - Leonardo Stoppani
+# Date: 2023-01-23
+# License: MIT
+
 from sklearn.metrics import accuracy_score
 from numpy import round
 from numpy import argmax
