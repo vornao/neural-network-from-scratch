@@ -1,3 +1,7 @@
+# Author: Giacomo Lagomarsini - Luca Miglior - Leonardo Stoppani
+# Date: 2023-01-23
+# License: MIT
+
 import numpy as np
 
 
@@ -12,6 +16,7 @@ def relu(x):
 def sigmoid_d(x, a=1):
     return sigmoid(x, a) * (1 - sigmoid(x, a))
 
+
 def relu_d(x):
     return x > 0
 
@@ -19,16 +24,17 @@ def relu_d(x):
 def softmax(x):
     return np.exp(x) / sum(np.exp(x))
 
+
 def sofmax_d(x):
-    return  softmax(x)*(1-softmax(x))
+    return softmax(x) * (1 - softmax(x))
+
+
 def linear(x):
     return x
 
 
 def linear_d(x):
     return 1
-
-
 
 
 class Activation:
@@ -42,6 +48,7 @@ class Activation:
 class Linear(Activation):
     def activation(self, x):
         return x
+
     def derivative(self, x):
         return 1
 
@@ -68,7 +75,7 @@ class ReLU(Activation):
 class Softmax(Activation):
     def activation(self, x):
         return np.exp(x) / np.exp(x).sum()
-    
+
     def derivative(self, x):
         return np.exp(x) / np.exp(x).sum()
 
@@ -78,4 +85,4 @@ class Tanh(Activation):
         return np.tanh(x)
 
     def derivative(self, x):
-        return 1 - np.tanh(x)**2
+        return 1 - np.tanh(x) ** 2
