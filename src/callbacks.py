@@ -12,9 +12,7 @@ class Callback:
         self.kwargs = kwargs
 
     def __call__(self, *args, **kwargs):
-        raise NotImplementedError(
-            "-- I lay in the v o i d --"
-        )
+        raise NotImplementedError("-- I lay in the v o i d --")
 
 
 class EarlyStopping(Callback):

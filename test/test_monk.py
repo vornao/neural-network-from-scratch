@@ -41,33 +41,35 @@ def test_network_monk3():
     acc = binary_accuracy(y_pred, y_test)
     assert acc > 0.8
 
+
 # test monk 2
 def test_network_monk2():
-    
-        # load monk2
-        x_train, x_val, x_test, y_train, y_val, y_test = load_monk2(test_size=0.0001)
-    
-        binary_accuracy = BinaryAccuracy()
 
-        model = Network(17)
-        model.add_layer(3, ReLU())
-        model.add_layer(1, Sigmoid())
-    
-        stats = model.train(
-            (x_train, y_train),
-            (x_val, y_val),
-            metric=BinaryAccuracy(),
-            loss=MeanSquaredError(),
-            epochs=1000,
-            eta=0.01,
-            nesterov=0.7,
-            verbose=False,
-        )
-    
-        # compute accuracy
-        y_pred = model.multiple_outputs(x_test)
-        acc = binary_accuracy(y_pred, y_test)    
-        assert acc == 1
+    # load monk2
+    x_train, x_val, x_test, y_train, y_val, y_test = load_monk2(test_size=0.0001)
+
+    binary_accuracy = BinaryAccuracy()
+
+    model = Network(17)
+    model.add_layer(3, ReLU())
+    model.add_layer(1, Sigmoid())
+
+    stats = model.train(
+        (x_train, y_train),
+        (x_val, y_val),
+        metric=BinaryAccuracy(),
+        loss=MeanSquaredError(),
+        epochs=1000,
+        eta=0.01,
+        nesterov=0.7,
+        verbose=False,
+    )
+
+    # compute accuracy
+    y_pred = model.multiple_outputs(x_test)
+    acc = binary_accuracy(y_pred, y_test)
+    assert acc == 1
+
 
 # test monk 1
 def test_network_monk1():

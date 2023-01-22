@@ -103,7 +103,7 @@ class Layer:
         self.last_net = np.NaN
         self.last_output = np.NaN
         # last delta used for momentum
-        self.last_delta = np.zeros(self.W.shape)  
+        self.last_delta = np.zeros(self.W.shape)
 
         return self.W, self.bias
 
@@ -113,6 +113,7 @@ class Layer:
 
 class InputLayer(Layer):
     """Input layer."""
+
     def __init__(self, units: int) -> None:
         self.output_shape = units
         self.units = units

@@ -4,6 +4,7 @@
 
 import numpy as np
 
+
 class Loss:
     def loss(self, pred, labels):
         raise NotImplementedError("I lay in the -- v o i d --")

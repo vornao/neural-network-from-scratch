@@ -113,10 +113,10 @@ def load_monk2(test_size=0.2, validation=False):
     return X_train, X_val, X_test, y_train, y_val, y_test
 
 
-#load monk3 dataset
+# load monk3 dataset
 def load_monk3(test_size=0.2, validation=False):
-    train = pd.read_csv('../data/monk/monks-3.train', sep=' ').drop(['a8'], axis=1)
-    test = pd.read_csv('../data/monk/monks-3.test', sep=' ').drop(['a8'], axis=1)
+    train = pd.read_csv("../data/monk/monks-3.train", sep=" ").drop(["a8"], axis=1)
+    test = pd.read_csv("../data/monk/monks-3.test", sep=" ").drop(["a8"], axis=1)
 
     enc = OneHotEncoder(handle_unknown="ignore")
     enc.fit(train.drop("a1", axis=1))
@@ -137,7 +137,7 @@ def load_monk3(test_size=0.2, validation=False):
     # train validation test split
     if not validation:
         return X_train, X_test, y_train, y_test
-    
+
     X_train, X_val, y_train, y_val = train_test_split(
         X_train, y_train, test_size=test_size, random_state=42
     )

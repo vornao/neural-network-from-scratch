@@ -7,3 +7,4 @@ venv
 .vscode
 .pytest_cache
 blind_result
+gradient_slayers.csv

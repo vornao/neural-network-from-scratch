@@ -4,6 +4,7 @@
 
 import numpy as np
 
+
 class Regularizer:
     def __init__(self, lamda):
         self.lamda = lamda

@@ -15,6 +15,7 @@ from src.callbacks import Callback
 # the format for the progress bar
 fmt = "{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt}[{postfix}]"
 
+
 @staticmethod
 def update_bar(bar, stats):
     bar.set_postfix(stats)
@@ -115,7 +116,7 @@ class Network:
         eta=10e-3,
         verbose=True,
         callbacks: List[Callback] = [],
-        nesterov=0, 
+        nesterov=0,
     ):
         """
         Train network with given data and labels for requested epoch.
@@ -138,11 +139,10 @@ class Network:
         if verbose:
             self.bar = tqdm(total=epochs, desc="Training", bar_format=fmt)
 
-
         for epoch in range(0, epochs):
             if not self.training:
                 break
-            
+
             for x, target in zip(train_data, train_labels):
 
                 pred = self.__forward_prop__(x)
