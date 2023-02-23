@@ -50,7 +50,7 @@ $$w^l_{new} = w_{old}^l + \eta\delta^lx$$
 Code has been first tested with moons datasets ([see here](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_moons.html)) by generating 3000 random samples belonging to two distinct classes.
 ![Moons dataset](/assets/moons.png)
 
-Four layers model (Binary input, 2 ReLU layers with 8 units each, single unit output with Sigmoid activation) has performed very well, with 86% accuracy on never-seen-before data.
+Four layers model (Binary input, 2 ReLU layers with 8 units each, single unit output with Sigmoid activation) has performed very well, with around 99% accuracy on never-seen-before data.
 
 ```> Model accuracy: 100%. ROC AUC Score: 1.0```
 
